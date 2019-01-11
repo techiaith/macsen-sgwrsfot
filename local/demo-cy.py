@@ -44,7 +44,7 @@ locations = [
     "Pwllheli"
 ]
 for loc in locations:
-    engine.register_entity(loc.lower(), "WeatherLocation", domain='DomainWeather')
+    engine.register_entity(loc, "WeatherLocation", domain='DomainWeather')
 
 # structure intent
 weather_intent = IntentBuilder("WeatherIntent")\

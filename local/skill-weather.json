@@ -1,0 +1,27 @@
+{
+	"domain": "DomainWeather",
+	"intents": [
+			{		
+				"name": "WeatherIntent",
+				"entities": [				
+						{ 
+							"name":"Keyword",
+							"requirement":"require",
+							"keywords": [
+								{"keyword":"tywydd"}
+							]
+						},
+						{ 
+							"name":"Location",
+							"requirement":"optional",
+							"keywords": [
+								{"keyword":"Bangor"},				
+								{"keyword":"Caerdydd"},
+								{"keyword":"Caerfyrddin"},
+								{"keyword":"Pwllheli"}
+							]
+						}
+				]
+			}
+	]
+}
