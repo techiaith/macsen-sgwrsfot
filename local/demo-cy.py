@@ -88,10 +88,10 @@ engine.register_intent_parser(weather_intent, domain='DomainWeather')
 engine.register_intent_parser(music_intent, domain='DomainMusic')
 
 def determine_intent(text):
+    print ("\n\nTestun: " + text)
     for intent in engine.determine_intent(text):
-        print("\n** Intent: ** \n") 
         print(intent)
-        print('\n\n')
+        print('\n')
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
