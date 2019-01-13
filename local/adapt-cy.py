@@ -6,7 +6,7 @@ try with the following:
 PYTHONPATH=. python examples/multi_intent_parser.py "what's the weather like in tokyo"
 PYTHONPATH=. python examples/multi_intent_parser.py "play some music by the clash"
 """
-
+import os
 import json
 from pprint import pprint
 
@@ -27,11 +27,11 @@ tokenizer = WelshTokenizer()
 engine = DomainIntentDeterminationEngine()
 
 
-def loadJsonSkill(json_file_path):
+def loadJson(json_file_path):
    with open(json_file_path, 'r', encoding='utf-8') as skill_json_file:
       skill_json_data = json.load(skill_json_file)
 
-      print("Loading... " + skill_json_data['domain'])
+      print("Llwytho... " + skill_json_data['domain'])
       engine.register_domain(skill_json_data['domain'], tokenizer=tokenizer)
 
       for intent_json in skill_json_data['intents']:
@@ -55,10 +55,12 @@ def determine_intent(text):
         print(intent)
         print('\n')
 
+def load_intents():
+    for intent in os.listdir('intents'):
+        loadJson(os.path.join('intents',intent))
 
 if __name__ == "__main__":
-    loadJsonSkill('skill-weather.json')
-    loadJsonSkill('skill-music.json')
+    load_intents()
 
     if len(sys.argv) > 1:
         determine_intent(' '.join(sys.argv[1:]))

@@ -1,5 +1,5 @@
 {
-	"domain": "DomainWeather",
+	"domain": "Tywydd",
 	"intents": [
 			{		
 				"name": "WeatherIntent",
