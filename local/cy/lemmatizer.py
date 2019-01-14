@@ -6,6 +6,7 @@ LOOKUP = {
 "chwaraea":"chwarae",
 "gerddoriaeth":"cerddoriaeth",
 "fiwsig":"miwsig",
+"thechnoleg":'technoleg',
 "Nghaerdydd":"Caerdydd",
 "Mangor":"Bangor",
 "Mhwllheli":"Pwllheli",
