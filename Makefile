@@ -10,3 +10,5 @@ run:
 		-v ${PWD}/local/:/usr/local/src/adapt-cy \
 		techiaith/adapt bash
 
+clean:
+	docker rmi techiaith/adapt

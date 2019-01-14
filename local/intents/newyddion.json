@@ -1,0 +1,18 @@
+{
+	"domain": "Newyddion",
+	"intents": [
+			{		
+				"name": "NewsIntent",
+				"entities": [				
+						{ 
+							"name":"Keyword",
+							"requirement":"require",
+							"keywords": [
+								{"keyword":"newyddion"},
+								{"keyword":"pennawdau"}
+							]
+						}
+				]
+			}
+	]
+}
