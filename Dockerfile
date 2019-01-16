@@ -16,16 +16,9 @@ RUN apt-get update \
 	zip \
 	vim 
 
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash \
-	&& apt-get update && apt-get install -y graphviz ghostscript sox git-lfs \
-	&& apt-get clean \
-	&& git lfs install \
-	&& rm -rf /var/lib/apt/lists/*
 
-RUN git config --global credential.helper cache
-
-RUN mkdir -p /usr/local/src/
-WORKDIR /usr/local/src
+RUN mkdir -p /opt/adapt-api/
+WORKDIR /opt/adapt-api
 
 RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 

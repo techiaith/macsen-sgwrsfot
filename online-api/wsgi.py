@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+import os
+import sys
+import json
+import codecs
+
+import cherrypy
+import logging
+
+from adapt.intent import IntentBuilder
+from adapt.engine import DomainIntentDeterminationEngine
+
+from cy.nlp.tokenizer import WelshTokenizer
+
+class AdaptAPI(object):
+
+    def __init__(self):
+              
+        self.tokenizer = WelshTokenizer()
+        self.intent_engine = DomainIntentDeterminationEngine()
+
+        intents_dir = "cy/intents" 
+        for intent in os.listdir(intents_dir):
+            self.loadJson(os.path.join(intents_dir,intent))
+ 
+    def loadJson(self, json_file_path):
+        with codecs.open(json_file_path, 'r', encoding='utf-8') as skill_json_file:
+            skill_json_data = json.load(skill_json_file)
+            cherrypy.log("Loading... " + skill_json_data['domain'])
+            self.intent_engine.register_domain(skill_json_data['domain'], tokenizer=self.tokenizer)
+
+            for intent_json in skill_json_data['intents']:
+                intent_builder = IntentBuilder(intent_json["name"])
+                for entity_json in intent_json["entities"]:
+                    for keyword_json in entity_json["keywords"]:
+                        self.intent_engine.register_entity(keyword_json["keyword"], entity_json["name"], domain=skill_json_data['domain'])
+
+                    if entity_json["requirement"]=="require":
+                        intent_builder.require(entity_json["name"])
+                    elif entity_json["requirement"]=="optional":
+                        intent_builder.optionally(entity_json["name"])
+
+                    intent = intent_builder.build()
+                    self.intent_engine.register_intent_parser(intent, domain=skill_json_data['domain'])
+
+    @cherrypy.expose
+    def index(self):
+        return "determine_intent/?text=....."
+
+    @cherrypy.expose
+    def determine_intent(self, text, **kwargs):
+        cherrypy.log("determining_intent:  '%s'" % text)
+        try:
+            if not text:
+                raise ValueError("'text' missing")
+        except ValueError as e:
+            return "ERROR: %s" % str(e)
+
+        result = ''
+        for intent in self.intent_engine.determine_intent(text):
+            result += str(intent) + '\n'
+
+        cherrypy.log(result)
+        return result
+ 
+
+cherrypy.config.update({
+    'environment': 'production',
+    'log.screen': False,
+    'response.stream': True,
+    'log.error_file': 'adapt-api.log',
+})
+
+cherrypy.tree.mount(AdaptAPI(), '/')
+application = cherrypy.tree
+
+
