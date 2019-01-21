@@ -56,13 +56,19 @@ class AdaptAPI(object):
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
-        result = ''
-        for intent in self.intent_engine.determine_intent(text):
-            result += str(intent) + '\n'
+        json_result = ''
 
-        cherrypy.log(result)
-        return result
- 
+        intents = []
+
+        for intent in self.intent_engine.determine_intent(text):
+            intents.append(intent)
+
+        if len(intents)>0:
+            json_result = json.dumps(intents[0])
+
+        cherrypy.log('intent result %s ' % json_result)
+        return json_result
+
 
 cherrypy.config.update({
     'environment': 'production',
