@@ -21,7 +21,9 @@ from adapt.intent import IntentBuilder
 from adapt.parser import Parser
 from adapt.engine import DomainIntentDeterminationEngine
 
-from cy.tokenizer import WelshTokenizer
+from nlp.tokenizer import WelshTokenizer
+
+from intents.python.TywyddBBC import get_bbc_location_id
 
 tokenizer = WelshTokenizer()
 engine = DomainIntentDeterminationEngine()
@@ -52,12 +54,20 @@ def loadJson(json_file_path):
 def determine_intent(text):
     print ("\n\nTestun: " + text)
     for intent in engine.determine_intent(text):
+        print (intent["intent_type"])
+        if intent["intent_type"] == "WeatherIntent":
+            print (intent["Location"])
+            print (get_bbc_location_id(intent["Location"]))
+            intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
+
         print(intent)
         print('\n')
 
 def load_intents():
     for intent in os.listdir('intents'):
-        loadJson(os.path.join('intents',intent))
+        intent_description_file = os.path.join('intents',intent)
+        if not os.path.isdir(intent_description_file):
+            loadJson(intent_description_file)
 
 if __name__ == "__main__":
     load_intents()

@@ -12,6 +12,10 @@ from adapt.engine import DomainIntentDeterminationEngine
 
 from cy.nlp.tokenizer import WelshTokenizer
 
+# intent specific...
+from cy.intents.python.TywyddBBC import get_bbc_location_id
+
+
 class AdaptAPI(object):
 
     def __init__(self):
@@ -21,7 +25,9 @@ class AdaptAPI(object):
 
         intents_dir = "cy/intents" 
         for intent in os.listdir(intents_dir):
-            self.loadJson(os.path.join(intents_dir,intent))
+            intent_description_file=os.path.join(intents_dir, intent)
+            if not os.path.isdir(intent_description_file):
+                self.loadJson(intent_description_file)
  
     def loadJson(self, json_file_path):
         with codecs.open(json_file_path, 'r', encoding='utf-8') as skill_json_file:
@@ -47,6 +53,13 @@ class AdaptAPI(object):
     def index(self):
         return "determine_intent/?text=....."
 
+    def post_process_intent(self, intent):
+        if intent["intent_type"] == "WeatherIntent":
+            cherrypy.log("Adding extra metadata bbc location id to intent")
+            intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
+            return intent
+
+
     @cherrypy.expose
     def determine_intent(self, text, **kwargs):
         cherrypy.log("determining_intent:  '%s'" % text)
@@ -61,7 +74,7 @@ class AdaptAPI(object):
         intents = []
 
         for intent in self.intent_engine.determine_intent(text):
-            intents.append(intent)
+            intents.append(self.post_process_intent(intent))
 
         if len(intents)>0:
             json_result = json.dumps(intents[0])
@@ -79,5 +92,4 @@ cherrypy.config.update({
 
 cherrypy.tree.mount(AdaptAPI(), '/')
 application = cherrypy.tree
-
 
