@@ -55,9 +55,11 @@ class AdaptAPI(object):
 
     def post_process_intent(self, intent):
         if intent["intent_type"] == "WeatherIntent":
-            cherrypy.log("Adding extra metadata bbc location id to intent")
-            intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
-            return intent
+            if "Location" in intent:
+                cherrypy.log("Adding extra metadata bbc location id to intent")
+                intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
+
+        return intent
 
 
     @cherrypy.expose

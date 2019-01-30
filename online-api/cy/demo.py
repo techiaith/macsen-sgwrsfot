@@ -56,9 +56,10 @@ def determine_intent(text):
     for intent in engine.determine_intent(text):
         print (intent["intent_type"])
         if intent["intent_type"] == "WeatherIntent":
-            print (intent["Location"])
-            print (get_bbc_location_id(intent["Location"]))
-            intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
+            if "Location" in intent:
+                print (intent["Location"])
+                print (get_bbc_location_id(intent["Location"]))
+                intent["bbc_location_id"] = get_bbc_location_id(intent["Location"])
 
         print(intent)
         print('\n')
