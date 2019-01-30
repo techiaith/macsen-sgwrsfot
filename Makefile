@@ -7,6 +7,7 @@ build:
 run:
 	docker run --name techiaith-adapt -it --rm \
 		-v ${PWD}/online-api/cy/:/usr/local/src/adapt-cy \
+		-v ${PWD}/padatious/:/opt/padatious/src \
 		techiaith/adapt bash
 
 clean:
