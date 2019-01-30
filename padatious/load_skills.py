@@ -6,6 +6,8 @@ from padatious import IntentContainer
 
 placenames_cy = []
 
+skills_repository = dict()
+
 
 def preprocess(placename):
     placename = placename.rstrip()
@@ -26,14 +28,15 @@ def load_placename_entities(placename_file_path):
 
            longitude = placename_data[102:153].rstrip()
            latitude = placename_data[153:].rstrip() 
-           
-           print (placename_cy, placename_en, longitude, latitude)
 
 
 def load_skill_intents(skills_root_dir, skillname):
 
-    skill_intents_root_dir = os.path.join(skills_root_dir, skillname, 'intents')
+
     skill_intents_container = IntentContainer(skillname + "_cache")
+
+    skill_intents_root_dir = os.path.join(skills_root_dir, skillname, 'intents')
+    skill_entities_root_dir = os.path.join(skills_root_dir, skillname, 'entities')
 
     for intent_file_path in os.listdir(skill_intents_root_dir):
         if intent_file_path.endswith('.intent'):
@@ -44,13 +47,42 @@ def load_skill_intents(skills_root_dir, skillname):
                     sentence_examples.append(sentence_example)
             skill_intents_container.add_intent(intent_name, sentence_examples)
 
+    for entities_file_path in os.listdir(skill_entities_root_dir):
+        if entities_file_path.endswith('.entities'):
+            entity_name = entities_file_path.replace('.entities','')
+            entities = []
+            with open(os.path.join(skill_entities_root_dir, entities_file_path), 'r', encoding='utf-8') as entities_file:
+                for entity in entities_file:
+                    entities.append(entity)
+            skill_intents_container.add_entity(entity_name, entities)
+
+
     skill_intents_container.train() 
+    skills_repository[skillname] = skill_intents_container
 
-    print (skill_intents_container.calc_intent("Beth yw'r tywydd ym Mhwllheli?")) 
 
+def determine_intent(text):
+    best_intent = None
+    for key, intent_container in skills_repository.items():
+       intent = intent_container.calc_intent(text)
+       if not best_intent:
+           best_intent = intent
+       if intent.conf > best_intent.conf:
+           best_intent = intent
+
+    return best_intent 
 
  
 if __name__ == "__main__":
     #load_placename_entities('/opt/padatious/EnwauCymru.txt') 
-    load_skill_intents('/opt/padatious/skills','tywydd')
+    
+    #print (skill_intents_container.calc_intent("Beth yw'r tywydd ym Mhwllheli?")) 
+    SKILLS_ROOT_DIR='/opt/padatious/src/skills'  
+
+    load_skill_intents(SKILLS_ROOT_DIR, 'tywydd')
+    load_skill_intents(SKILLS_ROOT_DIR, 'newyddion')
+
+    print(determine_intent("Beth yw'r newyddion?"))
+    print(determine_intent("Sut mae'r tywydd yn Helsinki?"))
+
 

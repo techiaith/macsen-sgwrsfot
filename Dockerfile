@@ -26,6 +26,7 @@ ENV LC_ALL cy_GB.UTF-8
 
 
 RUN mkdir -p /opt/FaNN \
+  && cd /opt/FaNN \
   && wget http://downloads.sourceforge.net/project/fann/fann/2.2.0/FANN-2.2.0-Source.zip \
   && unzip FANN-2.2.0-Source.zip \
   && cd FANN-2.2.0-Source/ \
@@ -43,10 +44,8 @@ RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
 
 
 
-#RUN mkdir -p /opt/adapt-api/
-#WORKDIR /opt/adapt-api
-
-
+RUN mkdir -p /opt/adapt-api/
+WORKDIR /opt/adapt-api
 
 RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
