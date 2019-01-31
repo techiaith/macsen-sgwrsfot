@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import importlib
 
 from padatious import IntentContainer
 
@@ -31,7 +32,6 @@ def load_placename_entities(placename_file_path):
 
 
 def load_skill_intents(skills_root_dir, skillname):
-
 
     skill_intents_container = IntentContainer(skillname + "_cache")
 
@@ -82,7 +82,13 @@ if __name__ == "__main__":
     load_skill_intents(SKILLS_ROOT_DIR, 'tywydd')
     load_skill_intents(SKILLS_ROOT_DIR, 'newyddion')
 
-    print(determine_intent("Beth yw'r newyddion?"))
-    print(determine_intent("Sut mae'r tywydd yn Helsinki?"))
+    #print(determine_intent("Beth yw'r newyddion?"))
+    #print(determine_intent("Sut mae'r tywydd yn Helsinki?"))
+
+    intent = determine_intent("Sut mae'r tywydd yn Helsinki?")
+    skill_python_module = importlib.import_module('skills.%s.handler' % intent.name.replace("intent_",""))
+    class_ = getattr(skill_python_module, intent.name.replace("intent_", "") + "_handler")
+    instance = class_()
+    instance.handle(intent)
 
 
