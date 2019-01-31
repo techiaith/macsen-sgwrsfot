@@ -43,7 +43,7 @@ WORKDIR /opt/padatious/
 RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
 
 # Skills
-RUN pip3 install pyowm
+RUN pip3 install pyowm feedparser
 
 
 
