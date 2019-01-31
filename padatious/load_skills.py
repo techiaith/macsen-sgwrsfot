@@ -5,33 +5,33 @@ import importlib
 
 from padatious import IntentContainer
 
-placenames_cy = []
+from nlp.cy.tokenizer import WelshTokenizer
 
-skills_repository = dict()
-
-
-def preprocess(placename):
-    placename = placename.rstrip()
-    if ',' in placename:
-        prep = placename[placename.index(','):]
-        placename = placename.replace(prep, '')
-        placename = prep + ' ' + placename
-        placename = placename.replace(',', '').lstrip().rstrip()
-    return placename
+skill_handlers = dict()
+skill_intent_parsers = dict()
 
 
-def load_placename_entities(placename_file_path):
-    with open(placename_file_path, 'r', encoding='utf-8') as placename_file:
-       for placename_data in placename_file:
-
-           placename_cy = preprocess(placename_data[0:51])
-           placename_en = preprocess(placename_data[51:102])
-
-           longitude = placename_data[102:153].rstrip()
-           latitude = placename_data[153:].rstrip() 
+def load(skills_root_dir, skillname):
+    load_intent_parser(skills_root_dir, skillname)
+    load_skill_handler(skillname)
 
 
-def load_skill_intents(skills_root_dir, skillname):
+def load_skill_handler(skillname):
+    skill_python_module = importlib.import_module('skills.%s.handler' % skillname)
+    class_ = getattr(skill_python_module, skillname + '_handler')
+    instance = class_()
+    #if hasattr(instance, 'get_lemmatization'):
+    #    instance.get_lemmatization()
+
+    skill_handlers[skillname]=instance
+
+    #skill_python_module = importlib.import_module('skills.%s.handler' % intent.name.replace("intent_",""))
+    #class_ = getattr(skill_python_module, intent.name.replace("intent_", "") + "_handler")
+    #instance = class_()
+    #print (instance.handle(intent))
+
+
+def load_intent_parser(skills_root_dir, skillname):
 
     skill_intents_container = IntentContainer(skillname + "_cache")
 
@@ -56,14 +56,23 @@ def load_skill_intents(skills_root_dir, skillname):
                     entities.append(entity)
             skill_intents_container.add_entity(entity_name, entities)
 
-
     skill_intents_container.train() 
-    skills_repository[skillname] = skill_intents_container
+    skill_intent_parsers[skillname] = skill_intents_container
 
 
-def determine_intent(text):
+    
+def handle_intent(intent):
+    print (skill_handlers[intent.name.replace("intent_","")].handle(intent))
+
+
+def determine_intent(text, tokenizer):
+    print (text)
+
     best_intent = None
-    for key, intent_container in skills_repository.items():
+    text = tokenizer.tokenize(text, True)
+    text = tokenizer.detokenize(text)
+
+    for key, intent_container in skill_intent_parsers.items():
        intent = intent_container.calc_intent(text)
        if not best_intent:
            best_intent = intent
@@ -73,22 +82,18 @@ def determine_intent(text):
     return best_intent 
 
 
-def handle_intent(intent):
-    skill_python_module = importlib.import_module('skills.%s.handler' % intent.name.replace("intent_",""))
-    class_ = getattr(skill_python_module, intent.name.replace("intent_", "") + "_handler")
-    instance = class_()
-    print (instance.handle(intent))
 
  
 if __name__ == "__main__":
     #load_placename_entities('/opt/padatious/EnwauCymru.txt') 
     
-    #print (skill_intents_container.calc_intent("Beth yw'r tywydd ym Mhwllheli?")) 
     SKILLS_ROOT_DIR='/opt/padatious/src/skills'  
 
-    load_skill_intents(SKILLS_ROOT_DIR, 'tywydd')
-    load_skill_intents(SKILLS_ROOT_DIR, 'newyddion')
+    load(SKILLS_ROOT_DIR, 'tywydd')
+    load(SKILLS_ROOT_DIR, 'newyddion')
 
-    handle_intent(determine_intent("Beth yw'r newyddion chwaraeon?"))
-    handle_intent(determine_intent("Sut mae'r tywydd yn Helsinki?"))
+    tokenizer = WelshTokenizer()
+    tokenizer.add_inflection_to_lemmatizer("Mhorthmadog","Porthmadog")
+    #handle_intent(determine_intent("Beth yw'r newyddion chwaraeon?", tokenizer))
+    handle_intent(determine_intent("Sut mae'r tywydd ym Mhorthmadog?", tokenizer))
 
