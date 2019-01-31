@@ -37,10 +37,13 @@ RUN mkdir -p /opt/FaNN \
 
 
 RUN mkdir -p /opt/padatious
-ADD padatious /opt/padatious
+#ADD padatious /opt/padatious
 
 WORKDIR /opt/padatious/
 RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
+
+# Skills
+RUN pip3 install pyowm
 
 
 
