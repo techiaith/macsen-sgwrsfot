@@ -89,9 +89,6 @@ if __name__ == "__main__":
     load_skill_intents(SKILLS_ROOT_DIR, 'tywydd')
     load_skill_intents(SKILLS_ROOT_DIR, 'newyddion')
 
-    handle_intent(determine_intent("Beth yw'r newyddion?"))
+    handle_intent(determine_intent("Beth yw'r newyddion chwaraeon?"))
     handle_intent(determine_intent("Sut mae'r tywydd yn Helsinki?"))
-
-
-
 

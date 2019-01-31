@@ -11,13 +11,13 @@ class newyddion_handler:
 
         result = "Dyma bennawdau gwefan newyddion Golwg 360\n"
 
-        rss_url = 'https://golwg360.cymru/newyddion<SUBJECT>ffrwd'
+        rss_url = 'https://golwg360.cymru/%s/ffrwd'
         subject = intent_parser_result.matches.get('subject')
 
         if subject is None:
-           rss_url = rss_url.replace("<SUBJECT>",'/')
+           rss_url = rss_url % 'newyddion'
         else:
-           rss_url = rss_url.replace('<SUBJECT>','/%s/' % subject)
+           rss_url = rss_url % subject
 
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
