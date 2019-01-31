@@ -36,11 +36,12 @@ RUN mkdir -p /opt/FaNN \
   && pip3 install padatious
 
 
-RUN mkdir -p /opt/padatious
-#ADD padatious /opt/padatious
-
-WORKDIR /opt/padatious/
+RUN mkdir -p /data
+WORKDIR /data
 RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
+
+RUN mkdir -p /opt/padatious
+WORKDIR /opt/padatious/
 
 # Skills
 RUN pip3 install pyowm feedparser
@@ -51,7 +52,6 @@ RUN mkdir -p /opt/adapt-api/
 WORKDIR /opt/adapt-api
 
 RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
-
 
 CMD bash
 
