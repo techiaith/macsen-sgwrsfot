@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 import importlib
 
 from padatious import IntentContainer
@@ -66,7 +67,6 @@ def handle_intent(intent):
 
 
 def determine_intent(text, tokenizer):
-    print (text)
 
     best_intent = None
     text = tokenizer.tokenize(text, True)
@@ -94,6 +94,8 @@ if __name__ == "__main__":
 
     tokenizer = WelshTokenizer()
     tokenizer.add_inflection_to_lemmatizer("Mhorthmadog","Porthmadog")
-    #handle_intent(determine_intent("Beth yw'r newyddion chwaraeon?", tokenizer))
-    handle_intent(determine_intent("Sut mae'r tywydd ym Mhorthmadog?", tokenizer))
 
+
+    #handle_intent(determine_intent("Beth yw'r newyddion chwaraeon?", tokenizer))
+    #handle_intent(determine_intent("Sut mae'r tywydd ym Mhorthmadog?", tokenizer))
+    handle_intent(determine_intent(sys.argv[1], tokenizer)) 

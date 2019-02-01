@@ -35,6 +35,7 @@ RUN mkdir -p /opt/FaNN \
   && apt-get install -q -y libfann-dev swig \
   && pip3 install padatious
 
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /data
 WORKDIR /data
