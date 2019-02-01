@@ -94,7 +94,6 @@ class WelshTokenizer(object):
             else:
                 token_list.append(word)
 
-        print (token_list)
         return token_list
 
      

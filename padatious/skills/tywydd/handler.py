@@ -18,12 +18,16 @@ class tywydd_handler:
         owm = pyowm.OWM('301745d853a8d421b86a37680f5bef2d')
         context = intent_parser_result.matches
 
-        response = "Dyma'r tywydd gan OpenWeather ar gyfer {placename} "
+        response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename}:\n"
         result = response.format(**context)
 
         place = intent_parser_result.matches.get("placename")
+
         observation = owm.weather_at_place(place)
-        result = result + observation.get_weather().get_status()
+        w = observation.get_weather()
+        temperature = w.get_temperature('celsius').get("temp")
+        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (w.get_status().lower(), temperature)
+        result = result + description
 
         return result
 
