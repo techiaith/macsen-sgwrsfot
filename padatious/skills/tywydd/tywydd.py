@@ -3,13 +3,17 @@
 import os
 import pyowm
 import pprint
+
+from Skill import Skill
+
 from padatious import IntentContainer
 
 
-class tywydd_handler:
+class tywydd_skill(Skill):
 
+    def __init__(self, root_dir, name):
+        super(tywydd_skill, self).__init__(root_dir, name)
 
-    def __init__(self):
         self.placenames = {}
         self.initialize_placenames()
 
@@ -17,12 +21,28 @@ class tywydd_handler:
     def handle(self, intent_parser_result):
         owm = pyowm.OWM('***REMOVED***')
         context = intent_parser_result.matches
-
         context["placename"] = context["placename"].capitalize()
-        placename_en, longitude, latitude = self.placenames[context.get("placename")]
+        response = ''
+        try:
+            if context["placename"] in self.placenames:
+                response = self.get_weather_for_placename_in_wales(owm, context)
+            else:
+                response = self.get_weather_for_placename(owm, context)
+        except:
+            template = "Mae'n ddrwg gen i, ond dwi methu estyn y tywydd ar gyfer {placename}\n"
+            response = template.format(**context)
+ 
+        #forecast = owm.three_hours_forecast_at_coords(latitude, longitude)
+        #pprint.pprint (forecast.get_forecast().to_XML())
+
+        return response
+
+
+    def get_weather_for_placename_in_wales(self, owm, context):
+
+        placename_en, longitude, latitude = self.placenames[context["placename"]]
         longitude = float(longitude)
         latitude = float(latitude)
-
         observation = owm.weather_at_coords(latitude, longitude)
 
         w = observation.get_weather()
@@ -42,8 +62,27 @@ class tywydd_handler:
         description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (w.get_status().lower(), temperature)
         result = result + description
 
-        #forecast = owm.three_hours_forecast_at_coords(latitude, longitude)
-        #pprint.pprint (forecast.get_forecast().to_XML())
+        return result
+
+
+    def get_weather_for_placename(self, owm, context):
+        observation = owm.weather_at_place(context["placename"])
+        w = observation.get_weather()
+        l = observation.get_location()
+        context["city"] = l.get_name()
+        context["country"] = l.get_country() 
+
+        response = ''
+        if context["city"]==context["placename"] or context["city"]==placename_en:
+            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
+        else:
+            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
+
+        result = response.format(**context)
+
+        temperature = w.get_temperature('celsius').get("temp")
+        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (w.get_status().lower(), temperature)
+        result = result + description
 
         return result
 
