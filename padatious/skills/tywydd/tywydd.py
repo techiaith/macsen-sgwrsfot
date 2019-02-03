@@ -11,11 +11,14 @@ from padatious import IntentContainer
 
 class tywydd_skill(Skill):
 
-    def __init__(self, root_dir, name):
-        super(tywydd_skill, self).__init__(root_dir, name)
+    def __init__(self, root_dir, name, nlp):
+        super(tywydd_skill, self).__init__(root_dir, name, nlp)
 
         self.placenames = {}
         self.initialize_placenames()
+
+        self._nlp.get_lemmatizer().add_inflection("Mhorthmadog", "Porthmadog")
+        self._nlp.get_lemmatizer().add_inflection("Mangor", "Bangor")
 
 
     def handle(self, intent_parser_result):
