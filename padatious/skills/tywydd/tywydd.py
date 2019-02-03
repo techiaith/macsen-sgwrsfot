@@ -18,7 +18,6 @@ class tywydd_skill(Skill):
         self.initialize_placenames()
 
 
-
     def handle(self, intent_parser_result):
         owm = pyowm.OWM('301745d853a8d421b86a37680f5bef2d')
         context = intent_parser_result.matches
@@ -116,5 +115,6 @@ class tywydd_skill(Skill):
                     self.placenames[placename_cy] = (placename_en, longitude, latitude)
                     self._nlp.get_lemmatization().add_lemma(placename_cy)
 
-                self._intent_container.add_entity('placename', list(self.placenames.keys()))
+                # placenames are not added, because of training limitations, to intent parsing 
+                # self._intent_container.add_entity('placename', list(self.placenames.keys()))
 

@@ -38,7 +38,7 @@ class Skill(object):
                 entity_type = entities_file_path.replace('.entities', '')
                 intents_container.add_entity(entity_type, self.get_skill_file_content(os.path.join(entities_root_dir, entities_file_path)))
 
-        intents_container.train()
+        intents_container.train(debug=True, single_thread=False, timeout=3600)
         return intents_container
 
 

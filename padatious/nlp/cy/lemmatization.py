@@ -18,6 +18,9 @@ class Lemmatization(object):
 
     def add_inflection(self, inflection, lemma):
         if inflection.lower() not in self.lookup.keys():
+            if lemma == inflection:
+                return
+            #print ("added %s => %s to lemmatization" % (inflection, lemma))
             self.lookup[inflection.lower()] = lemma.lower() 
 
 
@@ -25,7 +28,7 @@ class Lemmatization(object):
         self.add_inflection(self.soft_mutate(lemma.lower()), lemma.lower())
         self.add_inflection(self.nasal_mutate(lemma.lower()), lemma.lower())
         self.add_inflection(self.aspirate_mutate(lemma.lower()), lemma.lower())
-        self.add_inflection(self.h_prothesise(lemma.lower()), lemma.lower())
+        #self.add_inflection(self.h_prothesise(lemma.lower()), lemma.lower())
 
 
     def soft_mutate(self, word):
