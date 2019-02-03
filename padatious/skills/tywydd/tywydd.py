@@ -17,8 +17,6 @@ class tywydd_skill(Skill):
         self.placenames = {}
         self.initialize_placenames()
 
-        self._nlp.get_lemmatizer().add_inflection("Mhorthmadog", "Porthmadog")
-        self._nlp.get_lemmatizer().add_inflection("Mangor", "Bangor")
 
 
     def handle(self, intent_parser_result):
@@ -91,6 +89,7 @@ class tywydd_skill(Skill):
 
 
     def preprocess(self, placename):
+
         placename = placename.strip()
         if ',' in placename:
             prep = placename[placename.index(','):]
@@ -101,14 +100,21 @@ class tywydd_skill(Skill):
 
 
     def initialize_placenames(self):
-        with open('/data/EnwauCymru.txt', 'r', encoding='utf-8') as placename_file:
-           for placename_data in placename_file:
-               placename_cy = self.preprocess(placename_data[0:51])
-               if placename_cy in self.placenames.keys():
-                   continue
-               placename_en = self.preprocess(placename_data[51:102])
-               longitude = self.preprocess(placename_data[102:153])
-               latitude = self.preprocess(placename_data[153:])
+        if os.path.isfile('/data/EnwauCymru.txt'):
+            with open('/data/EnwauCymru.txt', 'r', encoding='utf-8') as placenames_file:
+                for _ in range(2):
+                  next(placenames_file)
 
-               self.placenames[placename_cy] = (placename_en, longitude, latitude)
+                for placename_data in placenames_file:
+                    placename_cy = self.preprocess(placename_data[0:51])
+                    if placename_cy in self.placenames.keys():
+                        continue
+                    placename_en = self.preprocess(placename_data[51:102])
+                    longitude = self.preprocess(placename_data[102:153])
+                    latitude = self.preprocess(placename_data[153:])
+
+                    self.placenames[placename_cy] = (placename_en, longitude, latitude)
+                    self._nlp.get_lemmatization().add_lemma(placename_cy)
+
+                self._intent_container.add_entity('placename', list(self.placenames.keys()))
 

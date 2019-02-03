@@ -12,7 +12,7 @@ regex_separator = r"[\\?!()\";/\\|`]"
 regex_clitics = r"'|:|-|'CH|'ch|'I|'i|'M|'m|'N|'n|'R|'r|'TH|'th|'U|'u|'W|'w"
 
 
-class Tokenizer(object):
+class Tokenization(object):
 
     def __init__(self):
         pass

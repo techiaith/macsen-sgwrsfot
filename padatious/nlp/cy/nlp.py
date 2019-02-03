@@ -1,28 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from .lemmatizer import Lemmatizer
-from .tokenizer import Tokenizer
+from .lemmatization import Lemmatization
+from .tokenization import Tokenization
 
 class NaturalLanguageProcessing(object):
 
     def __init__(self):
-        self.tokenizer = Tokenizer()
-        self.lemmatizer = Lemmatizer()
+        self.tokenization = Tokenization()
+        self.lemmatization = Lemmatization()
 
 
-    def get_lemmatizer(self):
-        return self.lemmatizer
+    def get_lemmatization(self):
+        return self.lemmatization
 
 
-    def get_tokenizer(self):
-        return self.tokenizer
+    def get_tokenization(self):
+        return self.tokenization
 
 
     def preprocess(self, text):
-        toks = self.tokenizer.tokenize(text)
+        toks = self.tokenization.tokenize(text)
         lemma_toks = [] 
         for t in toks:
-            lemma_toks.append(self.lemmatizer.lemmatize(t))
-        return self.tokenizer.detokenize(lemma_toks)
+            lemma_toks.append(self.lemmatization.lemmatize(t))
+        return self.tokenization.detokenize(lemma_toks)
           
