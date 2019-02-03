@@ -6,19 +6,20 @@ import importlib
 
 from padatious import IntentContainer
 
-from nlp.cy.tokenizer import WelshTokenizer
+#from nlp.cy.nlp import NaturalLanguageProcessing
 
 skill_handlers = dict()
 skill_intent_parsers = dict()
 
+
 class Skill(object):
 
-    def __init__(self, root_dir, name):
+    def __init__(self, root_dir, name, nlp):
         self._root_dir = root_dir
         self._name = name
-        self._tokenizer = WelshTokenizer()
-        #tokenizer.add_inflection_to_lemmatizer("Mhorthmadog","Porthmadog")
+        self._nlp = nlp
         self._intent_container = self.initialize_intent_parser()
+
 
     def initialize_intent_parser(self):
         intents_container = IntentContainer("%s_cache" % self._name)
@@ -40,10 +41,11 @@ class Skill(object):
         intents_container.train()
         return intents_container
 
+
     def calculate_intent(self, text):
-        text = self._tokenizer.tokenize(text, True)
-        text = self._tokenizer.detokenize(text)
+        text = self._nlp.preprocess(text)
         return self._intent_container.calc_intent(text)
+
 
     def get_skill_file_content(self, skill_file_path):
         content_array = []
