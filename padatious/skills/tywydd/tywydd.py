@@ -5,9 +5,9 @@ import pyowm
 import pprint
 
 from Skill import Skill
+from .owm.translate import Translator
 
 from padatious import IntentContainer
-
 
 class tywydd_skill(Skill):
 
@@ -16,7 +16,8 @@ class tywydd_skill(Skill):
 
         self.placenames = {}
         self.initialize_placenames()
-
+        self.translator=Translator()
+        
 
     def handle(self, intent_parser_result):
         owm = pyowm.OWM('***REMOVED***')
@@ -28,7 +29,7 @@ class tywydd_skill(Skill):
                 response = self.get_weather_for_placename_in_wales(owm, context)
             else:
                 response = self.get_weather_for_placename(owm, context)
-        except:
+        except :
             template = "Mae'n ddrwg gen i, ond dwi methu estyn y tywydd ar gyfer {placename}\n"
             response = template.format(**context)
  
@@ -59,7 +60,8 @@ class tywydd_skill(Skill):
         result = response.format(**context)
 
         temperature = w.get_temperature('celsius').get("temp")
-        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (w.get_status().lower(), temperature)
+        status_cy = self.translator.translate('status', w.get_status())
+        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (status_cy, temperature)
         result = result + description
 
         return result
@@ -81,7 +83,8 @@ class tywydd_skill(Skill):
         result = response.format(**context)
 
         temperature = w.get_temperature('celsius').get("temp")
-        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (w.get_status().lower(), temperature)
+        status_cy = self.translator.translate('status', w.get_status())
+        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (status_cy, temperature)
         result = result + description
 
         return result
