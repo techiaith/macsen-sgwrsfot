@@ -24,6 +24,8 @@ class tywydd_skill(Skill):
         context = intent_parser_result.matches
         context["placename"] = context["placename"].capitalize()
         response = ''
+        response = self.get_weather_for_placename_in_wales(owm, context)
+
         try:
             if context["placename"] in self.placenames:
                 response = self.get_weather_for_placename_in_wales(owm, context)
@@ -32,9 +34,6 @@ class tywydd_skill(Skill):
         except :
             template = "Mae'n ddrwg gen i, ond dwi methu estyn y tywydd ar gyfer {placename}\n"
             response = template.format(**context)
- 
-        #forecast = owm.three_hours_forecast_at_coords(latitude, longitude)
-        #pprint.pprint (forecast.get_forecast().to_XML())
 
         return response
 
@@ -61,8 +60,28 @@ class tywydd_skill(Skill):
 
         temperature = w.get_temperature('celsius').get("temp")
         status_cy = self.translator.translate('status', w.get_status())
-        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (status_cy, temperature)
+        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius\n" % (status_cy, temperature)
         result = result + description
+
+        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
+        #pprint.pprint (forecast.to_XML())
+
+        next_temperatures, next_status, next_time = [], [], []
+        for next_weather in forecast:
+            next_temperatures.append(next_weather.get_temperature('celsius').get('temp'))
+            next_status.append(next_weather.get_status())
+            next_time.append(next_weather.get_reference_time(timeformat='iso'))
+
+        print (len(next_time))
+        result = result + "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
+                           next_time[0],
+                           self.translator.translate('status', next_status[0]), 
+                           next_temperatures[0])
+
+        result = result + "Ac yna, am {} bydd y tywydd yn  {} gyda'r tymheredd yn {} gradd celsius\n".format(
+                           next_time[1],
+                           self.translator.translate('status', next_status[1]), 
+                           next_temperatures[1])
 
         return result
 
