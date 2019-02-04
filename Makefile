@@ -1,17 +1,16 @@
 default: build
 
 build:
-	docker build --rm -t techiaith/adapt .
+	docker build --rm -t techiaith/padatious .
 
 	
 run:
-	docker run --name techiaith-adapt -it --rm \
-		-v ${PWD}/online-api/cy/:/usr/local/src/adapt-cy \
-		-v ${PWD}/padatious/:/opt/padatious/src \
-		techiaith/adapt bash
+	docker run --name techiaith-padatious -it --rm \
+		-v ${PWD}/online-api/assistant/:/opt/padatious/src \
+		techiaith/padatious bash
 
 clean:
-	docker rmi techiaith/adapt
+	docker rmi techiaith/padatious
 
 
 
