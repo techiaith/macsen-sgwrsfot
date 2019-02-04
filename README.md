@@ -1,6 +1,4 @@
-
 # Online API
 
-` $ curl "localhost:5450/determine_intent/?text=beth+yw'r+tywydd+ym+Mangor?"`
 
-
+` $ curl "localhost:5455/perform_skill?text=beth+yw+r+tywydd+ym+Mhwllheli?"`
