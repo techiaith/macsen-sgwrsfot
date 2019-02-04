@@ -47,12 +47,5 @@ WORKDIR /opt/padatious/
 # Skills
 RUN pip3 install pyowm feedparser
 
-
-
-RUN mkdir -p /opt/adapt-api/
-WORKDIR /opt/adapt-api
-
-RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
-
 CMD bash
 
