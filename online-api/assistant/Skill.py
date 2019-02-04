@@ -6,8 +6,6 @@ import importlib
 
 from padatious import IntentContainer
 
-#from nlp.cy.nlp import NaturalLanguageProcessing
-
 skill_handlers = dict()
 skill_intent_parsers = dict()
 
