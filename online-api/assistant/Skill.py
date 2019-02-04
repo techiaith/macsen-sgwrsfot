@@ -5,10 +5,10 @@ import sys
 import importlib
 
 from padatious import IntentContainer
+from padatious.util import tokenize, expand_parentheses
 
 skill_handlers = dict()
 skill_intent_parsers = dict()
-
 
 class Skill(object):
 
@@ -50,7 +50,10 @@ class Skill(object):
         with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
             for entry in skill_file:
                 content_array.append(entry)
+                print (expand_parentheses(tokenize(entry)))
         return content_array
+
+
 
     def handle(self, intent):
         pass 
