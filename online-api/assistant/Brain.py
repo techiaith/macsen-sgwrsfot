@@ -6,15 +6,16 @@ import importlib
 
 from nlp.cy.nlp import NaturalLanguageProcessing
 
-SKILLS_ROOT_DIR = '/opt/skills-online-api/assistant/skills'
 
 class Brain(object):
     def __init__(self):
         self.skills = dict()
         self.nlp = NaturalLanguageProcessing()
 
-        self.load_skill(SKILLS_ROOT_DIR, 'tywydd')
-        self.load_skill(SKILLS_ROOT_DIR, 'newyddion')
+        skills_root_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'skills')
+        
+        self.load_skill(skills_root_dir, 'tywydd')
+        self.load_skill(skills_root_dir, 'newyddion')
 
     def load_skill(self, skills_root_dir, skillname):
         skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
@@ -41,4 +42,6 @@ class Brain(object):
                  best_intent = intent
         return best_intent 
 
-
+if __name__ == "__main__":
+    brain = Brain()
+    print(brain.handle(sys.argv[1]))
