@@ -22,6 +22,14 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
+    def expand_intents(self, **kwargs):
+        cherrypy.log("performing expand intents")
+        result = '\n'.join(self.brain.expand_intents())
+        cherrypy.log("expand intents completed")
+        return result
+
+
+    @cherrypy.expose
     def perform_skill(self, text, **kwargs):
         cherrypy.log("performing skill for text:  '%s'" % text)
         try:
