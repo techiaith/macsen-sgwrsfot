@@ -7,7 +7,7 @@ import codecs
 import cherrypy
 import logging
 
-from conversation.Brain import Brain
+from assistant.Brain import Brain
 
 
 class SkillsAPI(object):
