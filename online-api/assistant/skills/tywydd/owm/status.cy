@@ -55,7 +55,4 @@ dust|llwch
 volcanic ash|llwch folcanig
 squalls|hyrddwyntoedd
 tornado|corwynt
-few clouds|ambell gwmlw
-scattered clouds|cymolog
-broken clouds|cymolog
 overcast clouds|awyr cwbl gymylog
