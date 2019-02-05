@@ -31,6 +31,21 @@ class Lemmatization(object):
         #self.add_inflection(self.h_prothesise(lemma.lower()), lemma.lower())
 
 
+    def get_mutations(self, lemma):
+        result = []
+
+        if lemma.lower() != self.soft_mutate(lemma.lower()):
+            result.append(self.soft_mutate(lemma.lower()))
+
+        if lemma.lower() != self.nasal_mutate(lemma.lower()):
+            result.append(self.nasal_mutate(lemma.lower()))
+
+        if lemma.lower() != self.aspirate_mutate(lemma.lower()):
+            result.append(self.aspirate_mutate(lemma.lower()))
+
+        return result
+
+
     def soft_mutate(self, word):
         mutable_letters = set(("b", "c", "d", "g", "ll", "p", "m", "rh", "t"))
         soft_map = [("b", "f"), ("ch", "ch"), ("c", "g"), ("dd", "dd"), ("d", "dd"), ("g", ""),

@@ -140,3 +140,17 @@ class tywydd_skill(Skill):
                 # placenames are not added, because of training limitations, to intent parsing 
                 # self._intent_container.add_entity('placename', list(self.placenames.keys()))
 
+
+    def get_additional_entities(self, entity_name): 
+       result = []
+       if entity_name == 'placename':
+           for p in sorted(self.placenames.keys()):
+               result.append(p)
+               mutations = self._nlp.get_lemmatization().get_mutations(p)
+               for m in mutations:
+                   result.append(m.capitalize())
+       else:
+           return []
+
+       return result
+
