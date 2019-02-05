@@ -72,7 +72,7 @@ class tywydd_skill(Skill):
             next_status.append(next_weather.get_status())
             next_time.append(next_weather.get_reference_time(timeformat='iso'))
 
-        print (len(next_time))
+        #print (len(next_time))
         result = result + "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
                            next_time[0],
                            self.translator.translate('status', next_status[0]), 
