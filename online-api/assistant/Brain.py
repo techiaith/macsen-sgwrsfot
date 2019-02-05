@@ -6,7 +6,6 @@ import importlib
 
 from nlp.cy.nlp import NaturalLanguageProcessing
 
-
 class Brain(object):
     def __init__(self):
         self.skills = dict()
@@ -16,6 +15,7 @@ class Brain(object):
         
         self.load_skill(skills_root_dir, 'tywydd')
         self.load_skill(skills_root_dir, 'newyddion')
+
 
     def load_skill(self, skills_root_dir, skillname):
         skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
@@ -29,7 +29,7 @@ class Brain(object):
 
 
     def handle_intent(self, intent):
-        return self.skills[intent.name.replace("intent_", "")].handle(intent)
+        return self.skills[intent.name].handle(intent)
 
 
     def determine_intent(self, text):
@@ -42,6 +42,18 @@ class Brain(object):
                  best_intent = intent
         return best_intent 
 
+
+    def expand_intents(self):
+        result = []
+        for name in self.skills.keys():
+            skill = self.skills.get(name)
+            result = result + skill.expand_intents()
+        return result
+
+
 if __name__ == "__main__":
+
     brain = Brain()
     print(brain.handle(sys.argv[1]))
+
+    print('\n'.join(brain.expand_intents()))
