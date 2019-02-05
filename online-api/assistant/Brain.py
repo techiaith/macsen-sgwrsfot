@@ -45,9 +45,9 @@ class Brain(object):
 
     def expand_intents(self):
         result = []
-        for name in self.skills().keys():
-            skill = self.skills().get(name)
-            result.append(skill.expand_intents())
+        for name in self.skills.keys():
+            skill = self.skills.get(name)
+            result = result + skill.expand_intents()
         return result
 
 
@@ -56,4 +56,4 @@ if __name__ == "__main__":
     brain = Brain()
     print(brain.handle(sys.argv[1]))
 
-
+    print('\n'.join(brain.expand_intents()))
