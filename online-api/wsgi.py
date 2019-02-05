@@ -7,7 +7,7 @@ import codecs
 import cherrypy
 import logging
 
-from conversation.Brain import Brain
+from assistant.Brain import Brain
 
 
 class SkillsAPI(object):
@@ -19,6 +19,14 @@ class SkillsAPI(object):
     @cherrypy.expose
     def index(self):
         return "perform_skill/?text=....."
+
+
+    @cherrypy.expose
+    def expand_intents(self, **kwargs):
+        cherrypy.log("performing expand intents")
+        result = '\n'.join(self.brain.expand_intents())
+        cherrypy.log("expand intents completed")
+        return result
 
 
     @cherrypy.expose
