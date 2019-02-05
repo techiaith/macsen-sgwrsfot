@@ -37,7 +37,6 @@ class Skill(object):
             intents_container.add_entity(entity_name, entities_array)
         
         intents_container.train()
-
         return intents_container
 
 
@@ -69,6 +68,10 @@ class Skill(object):
                     for fieldname in fieldnames:
                         if fieldname in entities_dict:
                              fields_dict[fieldname]=entities_dict[fieldname]
+                        else:
+                             field_values = self.get_additional_entities(fieldname)
+                             if len(field_values) > 0:
+                                 fields_dict[fieldname]=field_values
 
                     if len(fields_dict) > 0:
                         keys, values = zip(*fields_dict.items())
@@ -79,6 +82,9 @@ class Skill(object):
                         result.append(sentence)
 
         return result 
+
+    def get_additional_entities(self, fieldname):
+        return [] 
 
 
     def calculate_intent(self, text):
