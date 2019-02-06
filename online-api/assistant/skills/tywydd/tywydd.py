@@ -6,7 +6,6 @@ import pprint
 
 from Skill import Skill
 
-
 from .owm.translate import Translator
 
 from padatious import IntentContainer
@@ -22,7 +21,7 @@ class tywydd_skill(Skill):
         
 
     def handle(self, intent_parser_result):
-        owm = pyowm.OWM('***REMOVED***')
+        owm = pyowm.OWM('301745d853a8d421b86a37680f5bef2d')
         context = intent_parser_result.matches
         context["placename"] = context["placename"].capitalize()
         response = []
@@ -88,8 +87,8 @@ class tywydd_skill(Skill):
 
         skill_response.append({
             'title' : '',
-            'description' : "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
-                           next_time[0],
+            'description' : "Ac yna am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
+                           next_time[1],
                            self.translator.translate('status', next_status[1]), 
                            next_temperatures[1]),
             'url' : ''} 
