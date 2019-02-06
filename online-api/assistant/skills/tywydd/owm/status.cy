@@ -1,3 +1,4 @@
+clouds|cymylau
 clear sky|awyr glir
 few clouds|ambell gwmwl	
 scattered clouds|cymylau gwasgaredig
