@@ -7,6 +7,7 @@ import codecs
 import cherrypy
 import logging
 
+from handlers import callback_handler
 from assistant.Brain import Brain
 
 
@@ -30,19 +31,26 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
+    @cherrypy.tools.json_out(handler=callback_handler)
     def perform_skill(self, text, **kwargs):
-        cherrypy.log("performing skill for text:  '%s'" % text)
+
+        result = {
+            'version' : 1
+        }
         try:
             if not text:
                 raise ValueError("'text' missing")
+             
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
-        result = self.brain.handle(text)
+        output = self.brain.handle(text)
+        result.update({
+            'result':output,
+            'success':True
+        })
 
-        cherrypy.log('skills result %s ' % result)
         return result
-
 
 cherrypy.config.update({
     'environment': 'production',

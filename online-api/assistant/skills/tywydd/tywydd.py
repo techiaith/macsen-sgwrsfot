@@ -5,6 +5,8 @@ import pyowm
 import pprint
 
 from Skill import Skill
+
+
 from .owm.translate import Translator
 
 from padatious import IntentContainer
@@ -23,9 +25,7 @@ class tywydd_skill(Skill):
         owm = pyowm.OWM('301745d853a8d421b86a37680f5bef2d')
         context = intent_parser_result.matches
         context["placename"] = context["placename"].capitalize()
-        response = ''
-        response = self.get_weather_for_placename_in_wales(owm, context)
-
+        response = []
         try:
             if context["placename"] in self.placenames:
                 response = self.get_weather_for_placename_in_wales(owm, context)
@@ -40,6 +40,8 @@ class tywydd_skill(Skill):
 
     def get_weather_for_placename_in_wales(self, owm, context):
 
+        skill_response = []
+
         placename_en, longitude, latitude = self.placenames[context["placename"]]
         longitude = float(longitude)
         latitude = float(latitude)
@@ -50,21 +52,23 @@ class tywydd_skill(Skill):
         context["city"] = l.get_name()
         context["country"] = l.get_country() 
 
-        response = ''
+        title_template = ''
         if context["city"]==context["placename"] or context["city"]==placename_en:
-            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
+            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
         else:
-            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
-
-        result = response.format(**context)
-
+            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
+        
         temperature = w.get_temperature('celsius').get("temp")
         status_cy = self.translator.translate('status', w.get_status())
         description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius\n" % (status_cy, temperature)
-        result = result + description
+
+        skill_response.append({
+            'title' : title_template.format(**context), 
+            'description' : description, 
+            'url' : ''
+        }) 
 
         forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
-        #pprint.pprint (forecast.to_XML())
 
         next_temperatures, next_status, next_time = [], [], []
         for next_weather in forecast:
@@ -72,41 +76,56 @@ class tywydd_skill(Skill):
             next_status.append(next_weather.get_status())
             next_time.append(next_weather.get_reference_time(timeformat='iso'))
 
-        #print (len(next_time))
-        result = result + "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
+
+        skill_response.append({
+            'title' : '',
+            'description' : "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
                            next_time[0],
                            self.translator.translate('status', next_status[0]), 
-                           next_temperatures[0])
+                           next_temperatures[0]),
+            'url' : ''}
+        )
 
-        result = result + "Ac yna, am {} bydd y tywydd yn  {} gyda'r tymheredd yn {} gradd celsius\n".format(
-                           next_time[1],
+        skill_response.append({
+            'title' : '',
+            'description' : "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
+                           next_time[0],
                            self.translator.translate('status', next_status[1]), 
-                           next_temperatures[1])
+                           next_temperatures[1]),
+            'url' : ''} 
+        )
+ 
+        return skill_response
 
-        return result
-
+   
 
     def get_weather_for_placename(self, owm, context):
+
+        skill_response = []
+
         observation = owm.weather_at_place(context["placename"])
         w = observation.get_weather()
         l = observation.get_location()
         context["city"] = l.get_name()
         context["country"] = l.get_country() 
 
-        response = ''
+        title_template = ''
         if context["city"]==context["placename"] or context["city"]==placename_en:
-            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
+            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
         else:
-            response = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
+            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
 
-        result = response.format(**context)
 
         temperature = w.get_temperature('celsius').get("temp")
         status_cy = self.translator.translate('status', w.get_status())
         description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (status_cy, temperature)
-        result = result + description
 
-        return result
+        skill_response.append({
+            'title' : title_template.format(**context), 
+            'description' : description
+        })
+
+        return skill_response
 
 
     def preprocess(self, placename):

@@ -4,6 +4,7 @@ import os
 import feedparser
 
 from Skill import Skill
+
 from padatious import IntentContainer
 
 class newyddion_skill(Skill):
@@ -14,7 +15,12 @@ class newyddion_skill(Skill):
 
     def handle(self, intent_parser_result):
 
-        result = "Dyma bennawdau gwefan newyddion Golwg 360\n"
+        skill_response = []
+
+        skill_response.append({ 
+            'title' : "Dyma bennawdau gwefan newyddion Golwg 360",
+            'description' : '',
+            'url' : ''})
 
         rss_url = 'https://golwg360.cymru/%s/ffrwd'
         subject = intent_parser_result.matches.get('subject')
@@ -26,8 +32,11 @@ class newyddion_skill(Skill):
 
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
-            result = result + entry.get("title") + '\n'
-            result = result + entry.get('description') + '\n\n'
+            skill_response.append({
+                'title' : entry.get("title"), 
+                'description' : entry.get('description'), 
+                'url' : ''
+            }) 
 
-        return result
+        return skill_response
         

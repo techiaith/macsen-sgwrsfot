@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import jsonpickle
+
 import importlib
 
 from nlp.cy.nlp import NaturalLanguageProcessing
 
+
 class Brain(object):
+
     def __init__(self):
         self.skills = dict()
         self.nlp = NaturalLanguageProcessing()
@@ -54,6 +58,9 @@ class Brain(object):
 if __name__ == "__main__":
 
     brain = Brain()
-    print(brain.handle(sys.argv[1]))
+    response = brain.handle(sys.argv[1])
+    
+    print (jsonpickle.encode(response))
 
-    print('\n'.join(brain.expand_intents()))
+    #print(brain.handle(sys.argv[1]))
+    #print('\n'.join(brain.expand_intents()))
