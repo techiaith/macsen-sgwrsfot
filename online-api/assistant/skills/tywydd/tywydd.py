@@ -6,7 +6,6 @@ import pprint
 
 from Skill import Skill
 
-
 from .owm.translate import Translator
 
 from padatious import IntentContainer
@@ -88,8 +87,8 @@ class tywydd_skill(Skill):
 
         skill_response.append({
             'title' : '',
-            'description' : "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
-                           next_time[0],
+            'description' : "Ac yna am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
+                           next_time[1],
                            self.translator.translate('status', next_status[1]), 
                            next_temperatures[1]),
             'url' : ''} 
