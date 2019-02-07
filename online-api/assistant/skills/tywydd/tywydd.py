@@ -7,7 +7,7 @@ import pprint
 from Skill import Skill
 
 from .owm.translate import Translator
-
+from .owm.apikey import OWM_API_KEY
 from padatious import IntentContainer
 
 class tywydd_skill(Skill):
@@ -21,7 +21,7 @@ class tywydd_skill(Skill):
         
 
     def handle(self, intent_parser_result):
-        owm = pyowm.OWM('***REMOVED***')
+        owm = pyowm.OWM(OWM_API_KEY)
         context = intent_parser_result.matches
         context["placename"] = context["placename"].capitalize()
         response = []
