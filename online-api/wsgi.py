@@ -13,6 +13,7 @@ from assistant.Brain import Brain
 
 class SkillsAPI(object):
 
+
     def __init__(self):
         self.brain = Brain()   
 
@@ -23,9 +24,18 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
-    def expand_intents(self, **kwargs):
-        cherrypy.log("performing expand intents")
-        result = '\n'.join(self.brain.expand_intents())
+    def expand_intents(self, additional_entities, **kwargs):
+        try:
+            if not additional_entities:
+                raise ValueError("'additional_entites' missing")
+        except ValueError as e:
+            return "ERROR: %s" % str(e)
+
+        cherrypy.log("performing expand intents %s" % additional_entities)
+        if additional_entities == 'True':
+            result = '\n'.join(self.brain.expand_intents(include_additional_entities=True))
+        else:
+            result = '\n'.join(self.brain.expand_intents(include_additional_entities=False))
         cherrypy.log("expand intents completed")
         return result
 
@@ -33,16 +43,16 @@ class SkillsAPI(object):
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
     def perform_skill(self, text, **kwargs):
-
-        result = {
-            'version' : 1
-        }
         try:
             if not text:
                 raise ValueError("'text' missing")
-             
         except ValueError as e:
             return "ERROR: %s" % str(e)
+
+        cherrypy.log("respond to - %s" % text)
+        result = {
+            'version' : 1
+        }
 
         output = self.brain.handle(text)
         result.update({
@@ -51,6 +61,7 @@ class SkillsAPI(object):
         })
 
         return result
+
 
 cherrypy.config.update({
     'environment': 'production',

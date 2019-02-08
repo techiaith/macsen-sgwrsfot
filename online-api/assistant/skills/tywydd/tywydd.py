@@ -24,6 +24,7 @@ class tywydd_skill(Skill):
     def handle(self, intent_parser_result):
         owm = pyowm.OWM(OWM_API_KEY)
         context = intent_parser_result.matches
+        print (context["placename"])
         context["placename"] = context["placename"].capitalize()
         response = []
         try:

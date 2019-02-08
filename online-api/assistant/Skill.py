@@ -49,7 +49,7 @@ class Skill(object):
                 yield artefact_name, artefact_file_lines
         
 
-    def expand_intents(self):
+    def expand_intents(self, include_additional_entities=False):
         # load entities first in the file and build a dictionary
         result = []
         entities_dict = dict()
@@ -69,9 +69,10 @@ class Skill(object):
                         if fieldname in entities_dict:
                              fields_dict[fieldname]=entities_dict[fieldname]
                         else:
-                             field_values = self.get_additional_entities(fieldname)
-                             if len(field_values) > 0:
-                                 fields_dict[fieldname]=field_values
+                             if include_additional_entities:
+                                 field_values = self.get_additional_entities(fieldname)
+                                 if len(field_values) > 0:
+                                     fields_dict[fieldname]=field_values
 
                     if len(fields_dict) > 0:
                         keys, values = zip(*fields_dict.items())
@@ -82,6 +83,7 @@ class Skill(object):
                         result.append(sentence)
 
         return result 
+
 
     def get_additional_entities(self, fieldname):
         return [] 
@@ -102,3 +104,4 @@ class Skill(object):
 
     def handle(self, intent):
         pass 
+

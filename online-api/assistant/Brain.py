@@ -47,11 +47,11 @@ class Brain(object):
         return best_intent 
 
 
-    def expand_intents(self):
+    def expand_intents(self, include_additional_entities=False):
         result = []
         for name in self.skills.keys():
             skill = self.skills.get(name)
-            result = result + skill.expand_intents()
+            result = result + skill.expand_intents(include_additional_entities)
         return result
 
 
