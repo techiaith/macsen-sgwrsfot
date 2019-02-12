@@ -42,7 +42,7 @@ class SkillsAPI(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
-    def perform_skill(self, text, **kwargs):
+    def perform_skill(self, text, longitude, latitude, **kwargs):
         try:
             if not text:
                 raise ValueError("'text' missing")
@@ -54,7 +54,7 @@ class SkillsAPI(object):
             'version' : 1
         }
 
-        output = self.brain.handle(text)
+        output = self.brain.handle(text, longitude, latitude)
         result.update({
             'result':output,
             'success':True

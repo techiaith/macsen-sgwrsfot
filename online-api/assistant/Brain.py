@@ -28,12 +28,18 @@ class Brain(object):
         self.skills[skillname] = instance
 
    
-    def handle(self, text):
-        return self.handle_intent(self.determine_intent(text))
+    def handle(self, text, latitude=0.0, longitude=0.0):
+
+        # Bangor, Gwynedd 
+        if latitude==0.0 and longitude==0.0:
+            latitude=53.2167738950777
+            longitude=-4.14310073720948
+
+        return self.handle_intent(self.determine_intent(text), latitude, longitude)
 
 
-    def handle_intent(self, intent):
-        return self.skills[intent.name].handle(intent)
+    def handle_intent(self, intent, latitude, longitude):
+        return self.skills[intent.name].handle(intent, latitude, longitude)
 
 
     def determine_intent(self, text):

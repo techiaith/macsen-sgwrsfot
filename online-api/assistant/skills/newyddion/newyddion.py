@@ -12,7 +12,7 @@ class newyddion_skill(Skill):
         super(newyddion_skill, self).__init__(root_dir, name, nlp)
 
 
-    def handle(self, intent_parser_result):
+    def handle(self, intent_parser_result, latitude, longitude):
 
         skill_response = []
         context = intent_parser_result.matches

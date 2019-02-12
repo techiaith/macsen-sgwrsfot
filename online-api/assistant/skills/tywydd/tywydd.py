@@ -21,44 +21,44 @@ class tywydd_skill(Skill):
         self.translator=Translator()
         
 
-    def handle(self, intent_parser_result):
-        owm = pyowm.OWM(OWM_API_KEY)
-        context = intent_parser_result.matches
-        print (context["placename"])
-        context["placename"] = context["placename"].capitalize()
-        response = []
-        try:
-            if context["placename"] in self.placenames:
-                response = self.get_weather_for_placename_in_wales(owm, context)
-            else:
-                response = self.get_weather_for_placename(owm, context)
-        except :
-            template = "Mae'n ddrwg gen i, ond dwi methu estyn y tywydd ar gyfer {placename}\n"
-            response = template.format(**context)
-
-        return response
-
-
-    def get_weather_for_placename_in_wales(self, owm, context):
-
+    def handle(self, intent_parser_result, latitude, longitude):
+        placename_en = ''
         skill_response = []
 
-        placename_en, longitude, latitude = self.placenames[context["placename"]]
-        longitude = float(longitude)
-        latitude = float(latitude)
-        observation = owm.weather_at_coords(latitude, longitude)
+        context = intent_parser_result.matches
 
+        ## get data from OpenWeatherMap API...
+        if "placename" in context.keys():
+            context["placename"] = context["placename"].capitalize()
+            if context["placename"] in self.placenames:
+                placename_en, longitude, latitude = self.placenames[context["placename"]]
+                longitude = float(longitude)
+                latitude = float(latitude)
+                observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
+                forecast = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+            else:
+                observation = self.api_get_weather_for_placename(context["placename"])
+                forecast = self.api_get_forecast_for_placename(context["placename"])
+        else:
+            observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
+            forecast = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+
+
+        ## current weather...
         w = observation.get_weather()
         l = observation.get_location()
         context["city"] = l.get_name()
         context["country"] = l.get_country() 
 
         title_template = ''
-        if context["city"]==context["placename"] or context["city"]==placename_en:
-            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
+        if "placename" in context.keys():
+            if context["city"]==context["placename"] or context["city"]==placename_en:
+                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename}\n"
+            else:
+                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename}\n"
         else:
-            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
-        
+            title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}\n"
+
         temperature = w.get_temperature('celsius').get("temp")
         status_cy = self.translator.translate('status', w.get_status())
         description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius\n" % (status_cy, temperature)
@@ -69,14 +69,12 @@ class tywydd_skill(Skill):
             'url' : ''
         }) 
 
-        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
-
+        ## forecast...
         next_temperatures, next_status, next_time = [], [], []
         for next_weather in forecast:
             next_temperatures.append(next_weather.get_temperature('celsius').get('temp'))
             next_status.append(next_weather.get_status())
             next_time.append(next_weather.get_reference_time(timeformat='iso'))
-
 
         skill_response.append({
             'title' : '',
@@ -98,39 +96,32 @@ class tywydd_skill(Skill):
  
         return skill_response
 
-   
 
-    def get_weather_for_placename(self, owm, context):
-
-        skill_response = []
-
-        observation = owm.weather_at_place(context["placename"])
-        w = observation.get_weather()
-        l = observation.get_location()
-        context["city"] = l.get_name()
-        context["country"] = l.get_country() 
-
-        title_template = ''
-        if context["city"]==context["placename"] or context["city"]==placename_en:
-            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename} {country}\n"
-        else:
-            title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename} {country}\n"
+    def api_get_weather_at_coords(self, latitude, longitude):
+        owm = pyowm.OWM(OWM_API_KEY)
+        observation = owm.weather_at_coords(latitude, longitude)
+        return observation
 
 
-        temperature = w.get_temperature('celsius').get("temp")
-        status_cy = self.translator.translate('status', w.get_status())
-        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius" % (status_cy, temperature)
+    def api_get_weather_for_placename(self, placename):
+        owm = pyowm.OWM(OWM_API_KEY)
+        observation = owm.weather_at_place(placename)
+        return observation
 
-        skill_response.append({
-            'title' : title_template.format(**context), 
-            'description' : description
-        })
 
-        return skill_response
+    def api_get_forecast_for_placename(self, placename):
+        owm = pyowm.OWM(OWM_API_KEY)
+        forecast = owm.three_hours_forecast(placename).get_forecast()
+        return forecast
+
+
+    def api_get_forecast_at_coords(self, latitude, longitude):
+        owm = pyowm.OWM(OWM_API_KEY)
+        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
+        return forecast
 
 
     def preprocess(self, placename):
-
         placename = placename.strip()
         if ',' in placename:
             prep = placename[placename.index(','):]

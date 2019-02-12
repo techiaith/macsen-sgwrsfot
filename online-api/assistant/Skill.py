@@ -102,6 +102,6 @@ class Skill(object):
         return content_array
 
 
-    def handle(self, intent):
+    def handle(self, intent, latitude, longitude):
         pass 
 
