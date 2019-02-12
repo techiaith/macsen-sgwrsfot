@@ -20,19 +20,15 @@ class SkillsAPI(object):
  
     @cherrypy.expose
     def index(self):
-        return "perform_skill/?text=....."
+        msg = "perform_skill/?text=.....\n"
+        msg = msg + "expand_intents/?<additional_entities=True|False>i\n"
+        return msg
 
 
     @cherrypy.expose
-    def expand_intents(self, additional_entities, **kwargs):
-        try:
-            if not additional_entities:
-                raise ValueError("'additional_entites' missing")
-        except ValueError as e:
-            return "ERROR: %s" % str(e)
-
-        cherrypy.log("performing expand intents %s" % additional_entities)
-        if additional_entities == 'True':
+    def expand_intents(self, **kwargs):
+        additional_entities = kwargs.get('additional_entities', False)
+        if additional_entities:
             result = '\n'.join(self.brain.expand_intents(include_additional_entities=True))
         else:
             result = '\n'.join(self.brain.expand_intents(include_additional_entities=False))
@@ -42,10 +38,13 @@ class SkillsAPI(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
-    def perform_skill(self, text, longitude, latitude, **kwargs):
+    def perform_skill(self, text, **kwargs):
+
         try:
             if not text:
                 raise ValueError("'text' missing")
+            latitude = kwargs.get('latitude', 0.0)
+            longitude = kwargs.get('longitude', 0.0)
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
