@@ -7,7 +7,8 @@ shower rain|cawodydd glaw
 rain|glaw
 thunderstorm|storm fellt a taranau
 snow|eira
-mist|niwl	
+mist|niwl
+drizzle|glaw mân
 thunderstorm with light rain|storm fellt a tharanau gyda glaw ysgafn
 thunderstorm with rain|storm fellt a tharanau gyda glaw 
 thunderstorm with heavy rain|storm fellt a tharanau gyda glaw trwm
