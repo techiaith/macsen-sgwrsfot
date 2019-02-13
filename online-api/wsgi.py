@@ -53,8 +53,9 @@ class SkillsAPI(object):
             'version' : 1
         }
 
-        output = self.brain.handle(text, longitude, latitude)
+        intent_name, output = self.brain.handle(text, longitude, latitude)
         result.update({
+            'intent':intent_name,
             'result':output,
             'success':True
         })

@@ -35,7 +35,10 @@ class Brain(object):
             latitude=53.2167738950777
             longitude=-4.14310073720948
 
-        return self.handle_intent(self.determine_intent(text), latitude, longitude)
+        intent = self.determine_intent(text)
+        skill_result=self.handle_intent(intent, latitude, longitude)
+
+        return intent.name, skill_result
 
 
     def handle_intent(self, intent, latitude, longitude):
