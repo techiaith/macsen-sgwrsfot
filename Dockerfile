@@ -45,7 +45,7 @@ RUN mkdir -p /opt/padatious
 WORKDIR /opt/padatious/
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle
+RUN pip3 install pyowm feedparser jsonpickle python-dateutil
 
 CMD bash
 

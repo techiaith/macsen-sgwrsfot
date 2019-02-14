@@ -37,7 +37,7 @@ class Brain(object):
 
         intent = self.determine_intent(text)
         skill_result=self.handle_intent(intent, latitude, longitude)
-
+        
         return intent.name, skill_result
 
 

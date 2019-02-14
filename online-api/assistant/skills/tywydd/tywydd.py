@@ -35,13 +35,13 @@ class tywydd_skill(Skill):
                 longitude = float(longitude)
                 latitude = float(latitude)
                 observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
-                forecast = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+                forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
             else:
                 observation = self.api_get_weather_for_placename(context["placename"])
-                forecast = self.api_get_forecast_for_placename(context["placename"])
+                forecasts = self.api_get_forecast_for_placename(context["placename"])
         else:
             observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
-            forecast = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+            forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
 
 
         ## current weather...
@@ -53,47 +53,60 @@ class tywydd_skill(Skill):
         title_template = ''
         if "placename" in context.keys():
             if context["city"]==context["placename"] or context["city"]==placename_en:
-                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename}\n"
+                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename}."
             else:
-                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename}\n"
+                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename}."
         else:
-            title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}\n"
+            title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}."
 
-        temperature = w.get_temperature('celsius').get("temp")
         status_cy = self.translator.translate('status', w.get_status())
-        description = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius\n" % (status_cy, temperature)
+        temperature = float(w.get_temperature('celsius').get("temp"))
+        description_template = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius"
+        if temperature < 0:
+            description_template = description_template + " o dan"
+        description = description_template % (status_cy, self._nlp.tokenization.round_float_token(temperature))
 
+
+        #
         skill_response.append({
             'title' : title_template.format(**context), 
-            'description' : description, 
+            'description' : description + ".", 
             'url' : ''
         }) 
 
-        ## forecast...
-        next_temperatures, next_status, next_time = [], [], []
-        for next_weather in forecast:
-            next_temperatures.append(next_weather.get_temperature('celsius').get('temp'))
-            next_status.append(next_weather.get_status())
-            next_time.append(next_weather.get_reference_time(timeformat='iso'))
+        ## forecast contains 40 observations at three hours intervals. 
+        forecast_weather_count=0
+        for forecast_weather in forecasts:
+            if forecast_weather_count > 1:
+                break
 
-        skill_response.append({
-            'title' : '',
-            'description' : "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
-                           next_time[0],
-                           self.translator.translate('status', next_status[0]), 
-                           next_temperatures[0]),
-            'url' : ''}
-        )
+            temperature = forecast_weather.get_temperature('celsius').get('temp')
+            temperature = self._nlp.tokenization.round_float_token(temperature)
 
-        skill_response.append({
-            'title' : '',
-            'description' : "Ac yna am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius\n".format(
-                           next_time[1],
-                           self.translator.translate('status', next_status[1]), 
-                           next_temperatures[1]),
-            'url' : ''} 
-        )
- 
+            status = forecast_weather.get_status()
+            status = self.translator.translate('status', status)
+
+            time = forecast_weather.get_reference_time(timeformat='iso')
+            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
+            
+            if forecast_weather_count==0:
+                description_template = "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius"
+            else:
+                description_template = "Ac yna am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius"
+
+            if temperature < 0:
+                description_template = description_template + " o dan"
+                temperature = abs(temperature)
+
+            description_template = description_template + "."
+
+            skill_response.append({
+                'title' : '',
+                'description' : description_template.format(time, status, temperature),
+                'url' : ''}
+            )
+            forecast_weather_count += 1
+
         return skill_response
 
 

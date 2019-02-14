@@ -105,3 +105,4 @@ class Skill(object):
     def handle(self, intent, latitude, longitude):
         pass 
 
+
