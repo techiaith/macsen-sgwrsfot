@@ -6,7 +6,7 @@ scattered clouds|cymylau gwasgaredig
 broken clouds|cymylau darniog
 shower rain|cawodydd glaw
 rain|glaw
-thunderstorm|storm fellt a taranau
+thunderstorm|storm fellt a tharanau
 snow|eira
 mist|niwl
 drizzle|glaw mân
@@ -15,7 +15,7 @@ thunderstorm with rain|storm fellt a tharanau gyda glaw
 thunderstorm with heavy rain|storm fellt a tharanau gyda glaw trwm
 light thunderstorm|storm fellt a tharanau ysgafn
 heavy thunderstorm|storm fellt a tharanau mawr
-ragged thunderstorm|storm mellt a taranau ysbeidiol
+ragged thunderstorm|storm mellt a tharanau ysbeidiol
 thunderstorm with light drizzle|storm fellt a tharanau gyda glaw mân ysgafn
 thunderstorm with drizzle|storm fellt a tharanau gyda glaw mân
 thunderstorm with heavy drizzle|storm fellt a tharanau gyda glaw mân trwm
@@ -25,8 +25,8 @@ heavy intensity drizzle|glaw mân trwm
 light intensity drizzle rain|glaw mân ysgafn glawiog
 drizzle rain|glaw mân
 heavy intensity drizzle	rain|glaw mân trwm glawiog
-shower rain and drizzle|cawodydd glaw a glaw mân
-heavy shower rain and drizzle|cawodydd glaw trwm a glaw mân
+shower rain and drizzle|cawodydd o law a glaw mân
+heavy shower rain and drizzle|cawodydd o law trwm a glaw mân
 shower drizzle|cawodydd glaw mân
 light rain|glaw ysgafn
 moderate rain|glaw cymhedrol
