@@ -59,11 +59,12 @@ class tywydd_skill(Skill):
         else:
             title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}."
 
-        status_cy = self.translator.translate('status', w.get_status())
+        status_cy = self.translator.generate_phrase('status', w.get_status())
         temperature = float(w.get_temperature('celsius').get("temp"))
-        description_template = "Mae hi'n %s gyda'r tymheredd yn %s gradd celcius"
+        description_template = "Mae %s gyda'r tymheredd yn %s gradd Celcius"
         if temperature < 0:
-            description_template = description_template + " o dan"
+            description_template = description_template + " o dan y rhewbwynt"
+            temperature = abs(temperature)
         description = description_template % (status_cy, self._nlp.tokenization.round_float_token(temperature))
 
 
@@ -84,18 +85,18 @@ class tywydd_skill(Skill):
             temperature = self._nlp.tokenization.round_float_token(temperature)
 
             status = forecast_weather.get_status()
-            status = self.translator.translate('status', status)
+            status = self.translator.generate_phrase('status', status)
 
             time = forecast_weather.get_reference_time(timeformat='iso')
             time = self._nlp.tokenization.datetime_token_to_hours_words(time)
             
             if forecast_weather_count==0:
-                description_template = "Am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius"
+                description_template = "Am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
             else:
-                description_template = "Ac yna am {} bydd hi'n {} gyda'r tymheredd yn {} gradd celsius"
+                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
 
             if temperature < 0:
-                description_template = description_template + " o dan"
+                description_template = description_template + " o dan y rhewbwynt"
                 temperature = abs(temperature)
 
             description_template = description_template + "."

@@ -16,6 +16,19 @@ class Translator:
         except:
             return text
 
+    def generate_phrase(self, own_field, text):
+        text = text.lower()
+        print (text, own_field)
+        try:
+            translation = self._translations[own_field][text].strip()
+            if own_field is 'status':
+                if text == 'clear':
+                   return "hi'n glir"
+                else:
+                   return "yna %s" % translation
+        except:
+            return text
+
 
     def initialize(self):
         trans_files_dir = os.path.dirname(os.path.realpath(__file__))
