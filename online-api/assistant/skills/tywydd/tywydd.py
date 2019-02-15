@@ -4,12 +4,16 @@ import os
 import pyowm
 import pprint
 
+from dateutil.tz import tzlocal
+from datetime import datetime, timedelta
+
 from Skill import Skill
 
 from .owm.translate import Translator
 from .owm.apikey import OWM_API_KEY
 
 from padatious import IntentContainer
+
 
 class tywydd_skill(Skill):
 
@@ -22,10 +26,73 @@ class tywydd_skill(Skill):
         
 
     def handle(self, intent_parser_result, latitude, longitude):
+         
+        context = intent_parser_result.matches
+        for key, value in context.items():
+            context[key] = context[key].replace("?","")
+
+        if "time_future" in context.keys():
+            return self.generate_weather_report_for_tomorrow(context, latitude, longitude)
+        else:
+            return self.generate_weather_report_for_today(context, latitude, longitude)
+       
+
+    def generate_weather_report_for_tomorrow(self, context, latitude, longitude):
+        skill_response = []
+        forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+
+        skill_response.append({
+            'title':"Dyma'r tywydd ar gyfer yfory gan OpenWeatherMap",
+            'description':"",
+            'url':""
+        })
+
+        ## forecast contains 40 observations at three hours intervals. 
+        time_now = datetime.now(tzlocal())
+        time_tomorrow = time_now + timedelta(days=1)
+        forecast_weather_count=0
+        for forecast_weather in forecasts:
+
+            time = forecast_weather.get_reference_time(timeformat='iso')
+            dt = self._nlp.tokenization.token_to_datetime(time)
+            if dt < time_tomorrow:
+                continue 
+
+            if forecast_weather_count > 1:
+                break
+            
+            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
+
+            temperature = forecast_weather.get_temperature('celsius').get('temp')
+            temperature = self._nlp.tokenization.round_float_token(temperature)
+
+            status = forecast_weather.get_status()
+            status = self.translator.generate_phrase('status', status)
+
+            if forecast_weather_count==0:
+                description_template = "Fory am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+            else:
+                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+
+            if temperature < 0:
+                description_template = description_template + " o dan y rhewbwynt"
+                temperature = abs(temperature)
+
+            description_template = description_template + "."
+
+            skill_response.append({
+                'title' : '',
+                'description' : description_template.format(time, status, temperature),
+                'url' : ''}
+            )
+            forecast_weather_count += 1
+
+        return skill_response
+        
+
+    def generate_weather_report_for_today(self, context, latitude, longitude):
         placename_en = ''
         skill_response = []
-
-        context = intent_parser_result.matches
 
         ## get data from OpenWeatherMap API...
         if "placename" in context.keys():
@@ -89,7 +156,7 @@ class tywydd_skill(Skill):
 
             time = forecast_weather.get_reference_time(timeformat='iso')
             time = self._nlp.tokenization.datetime_token_to_hours_words(time)
-            
+    
             if forecast_weather_count==0:
                 description_template = "Am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
             else:

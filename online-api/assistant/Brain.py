@@ -67,9 +67,8 @@ class Brain(object):
 if __name__ == "__main__":
 
     brain = Brain()
+    print('\n'.join(brain.expand_intents()))
+
     response = brain.handle(sys.argv[1])
-    
     print (jsonpickle.encode(response))
 
-    #print(brain.handle(sys.argv[1]))
-    #print('\n'.join(brain.expand_intents()))

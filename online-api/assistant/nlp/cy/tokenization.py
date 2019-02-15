@@ -64,6 +64,10 @@ class Tokenization(object):
         return int(round(float(orig_float)))
 
 
+    def token_to_datetime(self, time_string):
+        return parser.parse(time_string)
+
+
     def datetime_token_to_hours_words(self, orig_datetime):
         hour = 0
         ampm = ''
