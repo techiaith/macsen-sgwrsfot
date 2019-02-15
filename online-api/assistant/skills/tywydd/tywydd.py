@@ -61,7 +61,7 @@ class tywydd_skill(Skill):
 
         status_cy = self.translator.generate_phrase('status', w.get_status())
         temperature = float(w.get_temperature('celsius').get("temp"))
-        description_template = "Mae %s gyda'r tymheredd yn %s gradd Celcius"
+        description_template = "Mae %s gyda'r tymheredd yn %s gradd Celsius"
         if temperature < 0:
             description_template = description_template + " o dan y rhewbwynt"
             temperature = abs(temperature)

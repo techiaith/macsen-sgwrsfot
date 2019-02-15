@@ -29,6 +29,8 @@ class newyddion_skill(Skill):
             rss_url = rss_url % 'newyddion'
             title = "Dyma benawdau gwefan newyddion Golwg 360"
 
+        title = title + "."
+
         skill_response.append({ 
             'title' : title,
             'description' : '',
@@ -37,8 +39,8 @@ class newyddion_skill(Skill):
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
             skill_response.append({
-                'title' : entry.get("title"), 
-                'description' : entry.get('description'), 
+                'title' : entry.get("title") + ".", 
+                'description' : entry.get('description') + ".", 
                 'url' : entry.get('link')
             }) 
 
