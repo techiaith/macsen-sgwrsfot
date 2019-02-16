@@ -31,69 +31,15 @@ class tywydd_skill(Skill):
         for key, value in context.items():
             context[key] = context[key].replace("?","")
 
-        if "time_future" in context.keys():
-            return self.generate_weather_report_for_tomorrow(context, latitude, longitude)
-        else:
-            return self.generate_weather_report_for_today(context, latitude, longitude)
-       
-
-    def generate_weather_report_for_tomorrow(self, context, latitude, longitude):
-        skill_response = []
-        forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
-
-        skill_response.append({
-            'title':"Dyma'r tywydd ar gyfer yfory gan OpenWeatherMap",
-            'description':"",
-            'url':""
-        })
-
-        ## forecast contains 40 observations at three hours intervals. 
-        time_now = datetime.now(tzlocal())
-        time_tomorrow = time_now + timedelta(days=1)
-        forecast_weather_count=0
-        for forecast_weather in forecasts:
-
-            time = forecast_weather.get_reference_time(timeformat='iso')
-            dt = self._nlp.tokenization.token_to_datetime(time)
-            if dt < time_tomorrow:
-                continue 
-
-            if forecast_weather_count > 1:
-                break
-            
-            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
-
-            temperature = forecast_weather.get_temperature('celsius').get('temp')
-            temperature = self._nlp.tokenization.round_float_token(temperature)
-
-            status = forecast_weather.get_status()
-            status = self.translator.generate_phrase('status', status)
-
-            if forecast_weather_count==0:
-                description_template = "Fory am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
-            else:
-                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
-
-            if temperature < 0:
-                description_template = description_template + " o dan y rhewbwynt"
-                temperature = abs(temperature)
-
-            description_template = description_template + "."
-
-            skill_response.append({
-                'title' : '',
-                'description' : description_template.format(time, status, temperature),
-                'url' : ''}
-            )
-            forecast_weather_count += 1
-
-        return skill_response
+        observation, forecasts = self.get_weather_data(context, latitude, longitude)
         
+        if "time_future" in context.keys():
+            return self.generate_weather_report_for_tomorrow(context, observation, forecasts)
+        else:
+            return self.generate_weather_report_for_today(context, observation, forecasts)
+      
 
-    def generate_weather_report_for_today(self, context, latitude, longitude):
-        placename_en = ''
-        skill_response = []
-
+    def get_weather_data(self, context, latitude, longitude):
         ## get data from OpenWeatherMap API...
         if "placename" in context.keys():
             context["placename"] = context["placename"].capitalize()
@@ -109,7 +55,35 @@ class tywydd_skill(Skill):
         else:
             observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
             forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+        return observation, forecasts
 
+    def api_get_weather_at_coords(self, latitude, longitude):
+        owm = pyowm.OWM(OWM_API_KEY)
+        observation = owm.weather_at_coords(latitude, longitude)
+        return observation
+
+
+    def api_get_weather_for_placename(self, placename):
+        owm = pyowm.OWM(OWM_API_KEY)
+        observation = owm.weather_at_place(placename)
+        return observation
+
+
+    def api_get_forecast_for_placename(self, placename):
+        owm = pyowm.OWM(OWM_API_KEY)
+        forecast = owm.three_hours_forecast(placename).get_forecast()
+        return forecast
+
+
+    def api_get_forecast_at_coords(self, latitude, longitude):
+        owm = pyowm.OWM(OWM_API_KEY)
+        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
+        return forecast
+
+
+    def generate_weather_report_for_today(self, context, observation, forecasts):
+        placename_en = ''
+        skill_response = []
 
         ## current weather...
         w = observation.get_weather()
@@ -133,7 +107,6 @@ class tywydd_skill(Skill):
             description_template = description_template + " o dan y rhewbwynt"
             temperature = abs(temperature)
         description = description_template % (status_cy, self._nlp.tokenization.round_float_token(temperature))
-
 
         #
         skill_response.append({
@@ -178,28 +151,72 @@ class tywydd_skill(Skill):
         return skill_response
 
 
-    def api_get_weather_at_coords(self, latitude, longitude):
-        owm = pyowm.OWM(OWM_API_KEY)
-        observation = owm.weather_at_coords(latitude, longitude)
-        return observation
+    def generate_weather_report_for_tomorrow(self, context, observation, forecasts):
+        placename_en=''
+        skill_response = []
+
+        w = observation.get_weather()
+        l = observation.get_location()
+        context["city"] = l.get_name()
+        context["country"] = l.get_country()
+
+        title_template = ''
+        if "placename" in context.keys():
+            if context["city"]==context["placename"] or context["city"]==placename_en:
+                title_template = "Dyma tywydd yfory gan OpenWeather ar gyfer {placename}."
+            else:
+                title_template = "Dyma tywydd yfory gan OpenWeather ar gyfer {city} ger {placename}."
+        else:
+            title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city}."
 
 
-    def api_get_weather_for_placename(self, placename):
-        owm = pyowm.OWM(OWM_API_KEY)
-        observation = owm.weather_at_place(placename)
-        return observation
+        skill_response.append({
+            'title' : title_template.format(**context),
+            'description' : "",
+            'url' : ""
+        })
 
+        ## forecast contains 40 observations at three hours intervals. 
+        time_now = datetime.now(tzlocal())
+        time_tomorrow = time_now + timedelta(days=1)
+        forecast_weather_count=0
+        for forecast_weather in forecasts:
 
-    def api_get_forecast_for_placename(self, placename):
-        owm = pyowm.OWM(OWM_API_KEY)
-        forecast = owm.three_hours_forecast(placename).get_forecast()
-        return forecast
+            time = forecast_weather.get_reference_time(timeformat='iso')
+            dt = self._nlp.tokenization.token_to_datetime(time)
+            if dt < time_tomorrow:
+                continue 
 
+            if forecast_weather_count > 1:
+                break
+            
+            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
 
-    def api_get_forecast_at_coords(self, latitude, longitude):
-        owm = pyowm.OWM(OWM_API_KEY)
-        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
-        return forecast
+            temperature = forecast_weather.get_temperature('celsius').get('temp')
+            temperature = self._nlp.tokenization.round_float_token(temperature)
+
+            status = forecast_weather.get_status()
+            status = self.translator.generate_phrase('status', status)
+
+            if forecast_weather_count==0:
+                description_template = "Fory am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+            else:
+                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+
+            if temperature < 0:
+                description_template = description_template + " o dan y rhewbwynt"
+                temperature = abs(temperature)
+
+            description_template = description_template + "."
+
+            skill_response.append({
+                'title' : '',
+                'description' : description_template.format(time, status, temperature),
+                'url' : ''}
+            )
+            forecast_weather_count += 1
+
+        return skill_response
 
 
     def preprocess(self, placename):

@@ -11,6 +11,11 @@ from padatious import IntentContainer
 from padatious.util import expand_parentheses
 
 
+class EntitiesDict(dict):
+    def __missing__(self, key):
+        return '{' + key + '}'
+
+
 class Skill(object):
 
     def __init__(self, root_dir, name, nlp):
@@ -26,25 +31,36 @@ class Skill(object):
 
 
     def initialize_intent_parser(self):
+        
         intents_container = IntentContainer("%s_cache" % self._name)
 
         # load intents
-        for intent_name, intents_array in self.padatious_training_file_content('intents'):
+        for intent_name, intents_array in self.padatious_training_file_content('intents','intent'):
+            #print ("add intent %s, %s" % (intent_name, intents_array))
             intents_container.add_intent(intent_name, intents_array)
 
         # load entities 
-        for entity_name, entities_array in self.padatious_training_file_content('entities'):
+        for entity_name, entities_array in self.padatious_training_file_content('entities','entities'):
+            #print ("add entities %s, %s " % (entity_name, entities_array))
             intents_container.add_entity(entity_name, entities_array)
         
         intents_container.train()
         return intents_container
 
 
-    def padatious_training_file_content(self, artefact_type):
-        artefacts_root_dir = os.path.join(self._root_dir, self._name, artefact_type)
+    def get_skill_file_content(self, skill_file_path):
+        content_array = []
+        with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
+            for entry in skill_file:
+                content_array.append(entry.strip())
+        return content_array
+
+
+    def padatious_training_file_content(self, artefact_dirname, artefact_file_extension):
+        artefacts_root_dir = os.path.join(self._root_dir, self._name, artefact_dirname)
         for artefact_file_path in os.listdir(artefacts_root_dir):
-            if artefact_file_path.endswith('.' + artefact_type):
-                artefact_name = artefact_file_path.replace('.' + artefact_type, '')
+            if artefact_file_path.endswith('.' + artefact_file_extension):
+                artefact_name = artefact_file_path.replace('.' + artefact_file_extension, '')
                 artefact_file_lines = self.get_skill_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
                 yield artefact_name, artefact_file_lines
         
@@ -53,11 +69,11 @@ class Skill(object):
         # load entities first in the file and build a dictionary
         result = []
         entities_dict = dict()
-        for entity_type, entities_array in self.padatious_training_file_content('entities'):
+        for entity_type, entities_array in self.padatious_training_file_content('entities','entities'):
             entities_dict[entity_type]=entities_array
  
         # load intents again from file
-        for intent_type, intent_array in self.padatious_training_file_content('intents'):
+        for intent_type, intent_array in self.padatious_training_file_content('intents','intent'):
             for line in intent_array:
                 line_tokens = self._nlp.tokenization.tokenize(line)
                 expanded = expand_parentheses(line_tokens)
@@ -67,7 +83,7 @@ class Skill(object):
                     fields_dict = dict()
                     for fieldname in fieldnames:
                         if fieldname in entities_dict:
-                             fields_dict[fieldname]=entities_dict[fieldname]
+                             fields_dict[fieldname]=entities_dict[fieldname].copy()
                         else:
                              if include_additional_entities:
                                  field_values = self.get_additional_entities(fieldname)
@@ -78,10 +94,10 @@ class Skill(object):
                         keys, values = zip(*fields_dict.items())
                         permutations = [dict(zip(keys, v)) for v in itertools.product(*values)]
                         for p in permutations:
-                            result.append(sentence.format(**p))
+                            entities_dict_permutation = EntitiesDict(p)
+                            result.append(sentence.format(**entities_dict_permutation))
                     else:
                         result.append(sentence)
-
         return result 
 
 
@@ -92,14 +108,6 @@ class Skill(object):
     def calculate_intent(self, text):
         text = self._nlp.preprocess(text)
         return self._intent_container.calc_intent(text)
-
-
-    def get_skill_file_content(self, skill_file_path):
-        content_array = []
-        with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
-            for entry in skill_file:
-                content_array.append(entry.strip())
-        return content_array
 
 
     def handle(self, intent, latitude, longitude):
