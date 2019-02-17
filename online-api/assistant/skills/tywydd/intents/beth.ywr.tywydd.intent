@@ -1,3 +1,4 @@
+Beth ywr {tywydd_keyword}
 (Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword}?
 (Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword} {time_present}?
 (Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword} (yn|ym|yng) {placename}?
