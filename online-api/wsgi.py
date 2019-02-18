@@ -43,8 +43,8 @@ class SkillsAPI(object):
         try:
             if not text:
                 raise ValueError("'text' missing")
-            latitude = kwargs.get('latitude', 0.0)
-            longitude = kwargs.get('longitude', 0.0)
+            latitude = float(kwargs.get('latitude', 0.0))
+            longitude = float(kwargs.get('longitude', 0.0))
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
