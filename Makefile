@@ -22,6 +22,7 @@ build-online-api:
 run-online-api: 
 	docker run --name skills-online-api --restart=always \
 		--link skill-online-mysql:mysql \
+		-v ${PWD}/recordings/:/recordings \
 		-d -p 5455:8008  \
 		techiaith/skills-online-api
 

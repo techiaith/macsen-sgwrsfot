@@ -26,6 +26,17 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
+    def get_unrecorded_sentence(self, uid, **kwargs):
+        try:
+            if not uid:
+                raise ValueError("'uid' missing")
+        except ValueError as e:
+            return "ERROR: %s" % str(e)
+
+        return self.brain.get_unrecorded_sentence(uid)
+
+
+    @cherrypy.expose
     def expand_intents(self, **kwargs):
         additional_entities = kwargs.get('additional_entities', False)
         if additional_entities:
@@ -61,6 +72,7 @@ class SkillsAPI(object):
         })
 
         return result
+
 
 
 cherrypy.config.update({
