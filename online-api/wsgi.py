@@ -21,11 +21,13 @@ class SkillsAPI(object):
     @cherrypy.expose
     def index(self):
         msg = "perform_skill/?text=.....\n"
-        msg = msg + "expand_intents/?<additional_entities=True|False>i\n"
+        msg = msg + "get_all_sentences/?<additional_entities=True|False>i\n"
+        msg = msg + "get_unrecorded_sentence/?uid=.....\n"
         return msg
 
 
     @cherrypy.expose
+    @cherrypy.tools.json_out(handler=callback_handler)
     def get_unrecorded_sentence(self, uid, **kwargs):
         try:
             if not uid:
@@ -33,24 +35,30 @@ class SkillsAPI(object):
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
-        return self.brain.get_unrecorded_sentence(uid)
+        sentence = self.brain.get_unrecorded_sentence(uid)
+        result = {
+                'version' : 1
+        }
+        result.update({
+            'result':sentence,
+            'success':True
+        })
+        return result
 
 
     @cherrypy.expose
-    def expand_intents(self, **kwargs):
+    def get_all_sentences(self, **kwargs):
         additional_entities = kwargs.get('additional_entities', False)
         if additional_entities:
             result = '\n'.join(self.brain.expand_intents(include_additional_entities=True))
         else:
             result = '\n'.join(self.brain.expand_intents(include_additional_entities=False))
-        cherrypy.log("expand intents completed")
         return result
 
 
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
     def perform_skill(self, text, **kwargs):
-
         try:
             if not text:
                 raise ValueError("'text' missing")
