@@ -9,13 +9,14 @@ import logging
 
 from handlers import callback_handler
 from assistant.Brain import Brain
-
+from assistant.RecordingsDatabase import RecordingsDatabase
 
 class SkillsAPI(object):
 
 
     def __init__(self):
-        self.brain = Brain()   
+        self.brain = Brain()
+        self.recordings_database = RecordingsDatabase()
 
  
     @cherrypy.expose
@@ -81,6 +82,30 @@ class SkillsAPI(object):
 
         return result
 
+
+    @cherrypy.expose
+    def upload_recorded_sentence(self, uid, sentence, soundfile, **kwargs):
+        upload_dir_path =  os.path.join("/recordings", uid)
+        if not os.path.exists(upload_dir_path):
+            os.makedirs(upload_dir_path)
+
+        hashed_file_name = self.recordings_database.hash(sentence)
+
+        # create two files, wav and txt
+        sentence_txt_file_path = os.path.join(upload_dir_path, hashed_file_name + ".txt")
+        with open(sentence_txt_file_path, 'w', encoding='utf-8') as txtfile:
+            txtfile.write(sentence)
+
+        sentence_wav_file_path = os.path.join(upload_dir_path, hashed_file_name + '.wav')
+        with open(sentence_wav_file_path, 'wb') as wavfile:
+            while True:
+                data = soundfile.file.read(8192)
+                if not data:
+                    break;
+                wavfile.write(data)
+
+ 
+ 
 
 
 cherrypy.config.update({

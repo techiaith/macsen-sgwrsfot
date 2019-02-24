@@ -44,7 +44,8 @@ class Brain(object):
              if (len(errors)) == 0:
                  proofed_sentences.append(s)
                 
-        self.mysql_db = RecordingsDatabase(proofed_sentences)
+        self.mysql_db = RecordingsDatabase()
+        self.mysql_db.initialize(proofed_sentences)
 
 
     def get_unrecorded_sentence(self, uid):

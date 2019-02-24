@@ -9,9 +9,15 @@ DB_USER = "root"
 DB_PASSWORD = "Mac53n"
 DB_NAME = "Macsen"
 
+
 class RecordingsDatabase(object):
 
-    def __init__(self, sentences):
+
+    def __init__(self):
+        pass
+
+
+    def initialize(self, sentences):
         print ("RecordingDatabase init")
         self.create_database_if_not_exists()
         self.create_recorded_sentences_table_if_not_exists()
@@ -99,5 +105,4 @@ class RecordingsDatabase(object):
 
     def hash(self, sentence):
         return hashlib.md5(sentence.encode('utf-8')).hexdigest()
-
 
