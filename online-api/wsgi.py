@@ -89,7 +89,7 @@ class SkillsAPI(object):
         if not os.path.exists(upload_dir_path):
             os.makedirs(upload_dir_path)
 
-        hashed_file_name = self.recordings_database.hash(sentence)
+        hashed_file_name = self.recordings_database.sentence_is_recorded(uid, sentence) 
 
         # create two files, wav and txt
         sentence_txt_file_path = os.path.join(upload_dir_path, hashed_file_name + ".txt")
@@ -103,9 +103,6 @@ class SkillsAPI(object):
                 if not data:
                     break;
                 wavfile.write(data)
-
- 
- 
 
 
 cherrypy.config.update({

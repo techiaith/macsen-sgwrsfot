@@ -83,9 +83,11 @@ class RecordingsDatabase(object):
 
     def sentence_is_recorded(self, uid, sentence):
         db_data = []
-        db_data.append((uid, self.hash(sentence))) 
+        sentence_hash = self.hash(sentence)
+        db_data.append((uid, sentence_hash)) 
         sql_insert = "INSERT INTO RecordedSentences (uid, guid) VALUES (%s, %s)"
         self.execute_many_sql(sql_insert, db_data)
+        return sentence_hash
           
 
     def execute_sql(self, sql):
