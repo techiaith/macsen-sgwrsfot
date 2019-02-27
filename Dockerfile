@@ -11,6 +11,7 @@ RUN apt-get update \
 	python3 \ 
 	python3-pip \
 	python3-dev \
+        mysql-client \
 	perl \
         wget \
 	curl \
@@ -45,7 +46,7 @@ RUN mkdir -p /opt/padatious
 WORKDIR /opt/padatious/
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle pytz python-dateutil
+RUN pip3 install pyowm feedparser jsonpickle pytz python-dateutil PyMySQL
 
 CMD bash
 

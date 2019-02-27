@@ -29,7 +29,7 @@ RUN mkdir -p /opt/FaNN \
 
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle python-dateutil
+RUN pip3 install pyowm feedparser jsonpickle python-dateutil PyMySQL
 
 RUN mkdir -p /opt/skills-online-api
 WORKDIR /opt/skills-online-api

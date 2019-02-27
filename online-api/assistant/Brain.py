@@ -6,11 +6,13 @@ import jsonpickle
 
 import importlib
 
+from RecordingsDatabase import RecordingsDatabase
+
 from nlp.cy.nlp import NaturalLanguageProcessing
+from nlp.cy.cysill import CysillArleinAPI
 
 
 class Brain(object):
-
 
     def __init__(self):
         self.skills = dict()
@@ -21,6 +23,8 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'tywydd')
         self.load_skill(skills_root_dir, 'newyddion')
 
+        self.initialize_recordings_database()
+
 
     def load_skill(self, skills_root_dir, skillname):
         skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
@@ -28,7 +32,26 @@ class Brain(object):
         instance = class_(skills_root_dir, skillname, self.nlp)
         self.skills[skillname] = instance
 
-   
+
+    def initialize_recordings_database(self):
+        #print("creating db....") 
+        all_sentences = self.expand_intents()
+        proofed_sentences = []
+        cysill_api = CysillArleinAPI()
+
+        for s in all_sentences:
+             errors = cysill_api.get_errors(s) 
+             if (len(errors)) == 0:
+                 proofed_sentences.append(s)
+                
+        self.mysql_db = RecordingsDatabase()
+        self.mysql_db.initialize(proofed_sentences)
+
+
+    def get_unrecorded_sentence(self, uid):
+        return self.mysql_db.select_random_unrecorded_sentence(uid)
+
+
     def handle(self, text, latitude=0.0, longitude=0.0):
         # Bangor, Gwynedd 
         if latitude==0.0 and longitude==0.0:
