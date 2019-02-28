@@ -22,6 +22,7 @@ class Brain(object):
         
         self.load_skill(skills_root_dir, 'tywydd')
         self.load_skill(skills_root_dir, 'newyddion')
+        self.load_skill(skills_root_dir, 'amser')
 
         self.initialize_recordings_database()
 
@@ -40,9 +41,17 @@ class Brain(object):
         cysill_api = CysillArleinAPI()
 
         for s in all_sentences:
+             if len(s) == 0:
+                 continue
+
+             if '{' in s and '}' in s:
+                continue
+
              errors = cysill_api.get_errors(s) 
              if (len(errors)) == 0:
                  proofed_sentences.append(s)
+             else:
+                 print ("Error: %s" % s)
                 
         self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize(proofed_sentences)
