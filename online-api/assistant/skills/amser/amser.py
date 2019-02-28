@@ -45,7 +45,7 @@ class amser_skill(Skill):
      
         result = ''   
         if 'gloch_keyword' in context:
-            result += 'Mae hi nawr yn %s' % str(datetime_object.time())
+            result += 'Mae hi nawr yn %s:%s' % (str(datetime_object.time().hour),str(datetime_object.time().minute)) 
         elif 'dyddiad_keyword' in context:
             result += 'Dyddiad heddiw yw %s %s %s' % (
                 misoedd[datetime_object.date().month-1],
