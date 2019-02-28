@@ -45,12 +45,12 @@ class amser_skill(Skill):
      
         result = ''   
         if 'gloch_keyword' in context:
-            result += 'Mae hi nawr yn %s:%s' % (str(datetime_object.time().hour),str(datetime_object.time().minute)) 
+            result += 'Mae hi nawr yn {0}:{1:0=2d}'.format(datetime_object.time().hour, datetime_object.time().minute)
         elif 'dyddiad_keyword' in context:
-            result += 'Dyddiad heddiw yw %s %s %s' % (
+            result += 'Dyddiad heddiw yw {0} {1}, {2}'.format(
                 misoedd[datetime_object.date().month-1],
-                str(datetime_object.date().day),
-                str(datetime_object.date().year))
+                datetime_object.date().day,
+                datetime_object.date().year)
 
         skill_response.append({
             'title':result,
