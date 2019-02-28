@@ -11,7 +11,7 @@ from .timezonedb.apikey import TIMEZONEDB_API_KEY
 from Skill import Skill
 from padatious import IntentContainer
 
-misoedd = ['Ionawr', 'Chwefrof', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi', 'Hydref', 'Tachwedd', 'Rhagfyr']
+misoedd = ['Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi', 'Hydref', 'Tachwedd', 'Rhagfyr']
 
 class amser_skill(Skill):
 
@@ -48,7 +48,7 @@ class amser_skill(Skill):
             result += 'Mae hi nawr yn %s' % str(datetime_object.time())
         elif 'dyddiad_keyword' in context:
             result += 'Dyddiad heddiw yw %s %s %s' % (
-                misoedd[datetime_object.date().month],
+                misoedd[datetime_object.date().month-1],
                 str(datetime_object.date().day),
                 str(datetime_object.date().year))
 
