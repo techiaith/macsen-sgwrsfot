@@ -4,14 +4,14 @@ import os
 import requests
 import xml.etree.ElementTree as ET
 
-from dateutil.tz import tzlocal
-from datetime import datetime, timedelta
+import datetime
 
 from .timezonedb.apikey import TIMEZONEDB_API_KEY
 
 from Skill import Skill
 from padatious import IntentContainer
 
+misoedd = ['Ionawr', 'Chwefrof', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffennaf', 'Awst', 'Medi', 'Hydref', 'Tachwedd', 'Rhagfyr']
 
 class amser_skill(Skill):
 
@@ -41,16 +41,16 @@ class amser_skill(Skill):
         responseXml = ET.fromstring(r.text)
         datetime_string = responseXml.find('formatted').text
 
-        datetime_string_components = datetime_string.split()
-        date_string = datetime_string_components[0].strip()
-        time_string = datetime_string_components[1].strip()
-        time_string = time_string[:-3] 
+        datetime_object = datetime.datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
      
         result = ''   
         if 'gloch_keyword' in context:
-            result += 'Mae hi nawr yn %s' % time_string
+            result += 'Mae hi nawr yn %s' % str(datetime_object.time())
         elif 'dyddiad_keyword' in context:
-            result += 'Dyddiad heddiw yw %s' % date_string
+            result += 'Dyddiad heddiw yw %s %s %s' % (
+                misoedd[datetime_object.date().month],
+                str(datetime_object.date().day),
+                str(datetime_object.date().year))
 
         skill_response.append({
             'title':result,
