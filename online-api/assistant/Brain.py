@@ -41,6 +41,9 @@ class Brain(object):
         cysill_api = CysillArleinAPI()
 
         for s in all_sentences:
+             if len(s) == 0:
+                 continue
+
              if '{' in s and '}' in s:
                 continue
 

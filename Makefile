@@ -6,7 +6,7 @@ build:
 	
 run:
 	docker run --name techiaith-padatious -it --rm \
-		--link skill-online-mysql:mysql \
+		--link skills-online-mysql:mysql \
 		-v ${PWD}/online-api/assistant/:/opt/padatious/src \
 		techiaith/padatious bash
 

@@ -42,8 +42,9 @@ class amser_skill(Skill):
         datetime_string = responseXml.find('formatted').text
 
         datetime_string_components = datetime_string.split()
-        date_string = datetime_string_components[0]
-        time_string = datetime_string_components[1]
+        date_string = datetime_string_components[0].strip()
+        time_string = datetime_string_components[1].strip()
+        time_string = time_string[:-3] 
      
         result = ''   
         if 'gloch_keyword' in context:
