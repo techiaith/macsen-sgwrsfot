@@ -50,7 +50,7 @@ class SkillsAPI(object):
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
     def get_all_sentences(self, **kwargs):
-        sentences = self.recordings_database.select_sentences(uid, sentence) 
+        sentences = self.recordings_database.select_sentences() 
         result = {
                 'version': 1
         }
@@ -58,6 +58,7 @@ class SkillsAPI(object):
             'result':sentences,
             'success':True
         })
+        return result
 
 
     @cherrypy.expose

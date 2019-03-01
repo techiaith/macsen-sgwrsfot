@@ -62,11 +62,15 @@ class RecordingsDatabase(object):
         self.execute_many_sql(sql_insert, db_data)
 
     def select_sentences(self):
+        result = []
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
         cursor = cnx.cursor()
-        result = cursor.execute("""
+        cursor.execute("""
             SELECT sentence FROM Sentences
-        """).fetchall()
+        """)
+
+        result=cursor.fetchall()
+        cnx.close()
         return result
          
 
@@ -86,6 +90,7 @@ class RecordingsDatabase(object):
         if result > 0:
             unrecorded_sentence = cursor.fetchone()
 
+        cnx.close()
         return unrecorded_sentence
 
 
