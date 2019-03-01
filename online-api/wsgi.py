@@ -48,13 +48,16 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
+    @cherrypy.tools.json_out(handler=callback_handler)
     def get_all_sentences(self, **kwargs):
-        additional_entities = kwargs.get('additional_entities', False)
-        if additional_entities:
-            result = '\n'.join(self.brain.expand_intents(include_additional_entities=True))
-        else:
-            result = '\n'.join(self.brain.expand_intents(include_additional_entities=False))
-        return result
+        sentences = self.recordings_database.select_sentences(uid, sentence) 
+        result = {
+                'version': 1
+        }
+        result.update({
+            'result':sentences,
+            'success':True
+        })
 
 
     @cherrypy.expose

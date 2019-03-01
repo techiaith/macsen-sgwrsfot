@@ -61,6 +61,14 @@ class RecordingsDatabase(object):
         sql_insert = "INSERT INTO Sentences (guid, sentence) VALUES (%s, %s)"
         self.execute_many_sql(sql_insert, db_data)
 
+    def select_sentences(self):
+        cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
+        cursor = cnx.cursor()
+        result = cursor.execute("""
+            SELECT sentence FROM Sentences
+        """).fetchall()
+        return result
+         
 
     def select_random_unrecorded_sentence(self, uid):
         unrecorded_sentence = ''
