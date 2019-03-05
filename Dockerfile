@@ -25,7 +25,7 @@ ENV LANG cy_GB.UTF-8
 ENV LANGUAGE cy_GB:en  
 ENV LC_ALL cy_GB.UTF-8
 
-
+# padatious
 RUN mkdir -p /opt/FaNN \
   && cd /opt/FaNN \
   && wget http://downloads.sourceforge.net/project/fann/fann/2.2.0/FANN-2.2.0-Source.zip \
@@ -35,6 +35,9 @@ RUN mkdir -p /opt/FaNN \
   && make install \
   && apt-get install -q -y libfann-dev swig \
   && pip3 install padatious
+
+# adapt
+RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
 RUN rm -rf /var/lib/apt/lists/*
 
