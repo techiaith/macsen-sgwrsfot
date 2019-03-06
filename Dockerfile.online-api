@@ -28,6 +28,10 @@ RUN mkdir -p /opt/FaNN \
   && rm -rf /var/lib/apt/lists/*
 
 
+# Gosod Adapt / Install Adapt
+RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
+
+
 # Skills
 RUN pip3 install pyowm feedparser jsonpickle python-dateutil PyMySQL
 
