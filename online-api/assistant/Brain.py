@@ -69,7 +69,6 @@ class Brain(object):
 
         handler_key, intent = self.determine_intent(text)
         skill_result=self.handle_intent(handler_key, intent, latitude, longitude)
-        
         return intent.name, skill_result
 
 
@@ -83,6 +82,7 @@ class Brain(object):
 
         for key in self.skills.keys():
             intent = self.skills[key].calculate_intent(text)
+            print ( key, str(intent.conf))
             if not best_intent:
                  best_intent = intent
                  best_handler = key

@@ -22,12 +22,11 @@ class amser_skill(Skill):
     def handle(self, intent_parser_result, latitude, longitude):
 
         skill_response = []
-         
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
 
-        print (context)
+        print (intent_parser_result.name, context)
 
         url = "http://api.timezonedb.com/v2.1/get-time-zone"
         payload = {
@@ -43,11 +42,11 @@ class amser_skill(Skill):
 
         datetime_object = datetime.datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
      
-        result = ''   
-        if 'gloch_keyword' in context:
-            result += 'Mae hi nawr yn {0}:{1:0=2d}'.format(datetime_object.time().hour, datetime_object.time().minute)
-        elif 'dyddiad_keyword' in context:
-            result += 'Dyddiad heddiw yw {0} {1}, {2}'.format(
+        result = ''
+        if intent_parser_result.name == 'faint.or.gloch':
+            result = 'Mae hi nawr yn {0}:{1:0=2d}'.format(datetime_object.time().hour, datetime_object.time().minute)
+        elif intent_parser_result.name == 'beth.ywr.dyddiad':
+            result = 'Dyddiad heddiw yw {0} {1}, {2}'.format(
                 misoedd[datetime_object.date().month-1],
                 datetime_object.date().day,
                 datetime_object.date().year)
@@ -59,3 +58,4 @@ class amser_skill(Skill):
         })
 
         return skill_response
+
