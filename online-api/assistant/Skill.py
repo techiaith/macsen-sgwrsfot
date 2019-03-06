@@ -46,7 +46,7 @@ class Skill(object):
         self._adapt_intent_engine.register_domain(self._name)
 
         for intent_name, intent_file_path in self.get_intent_names():
-            print ("IntentBuilder: %s, %s" % (intent_name, intent_file_path))         
+            # print ("IntentBuilder: %s, %s" % (intent_name, intent_file_path))         
             intent_builder = IntentBuilder(intent_name)
             for intent_name, intent_example_sentences_array in self.intent_training_file_content(intent_file_path, 'intent'):
                 #print ("add intent %s, %s" % (intent_name, intent_example_sentences_array))
@@ -57,7 +57,7 @@ class Skill(object):
                 self._intents_container.add_entity(entity_name, entities_array)
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        print ("add keyword %s to %s" % (k, intent_name))
+                        # print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, 'keyword', domain=self._name)
                  
             intent=intent_builder.require('keyword').build()
@@ -134,15 +134,27 @@ class Skill(object):
 
     def calculate_intent(self, text):
         text = self._nlp.preprocess(text)
-        print ("evaluating: %s with adapt:" % text)
-        
+
+        # example result
+        # {'intent_type': 'beth.fydd.y.tywydd', 'confidence': 1.0, 'target': None, 'keyword': 'tywydd'}
+        #
+        #print ("evaluating: %s with adapt:" % text)
+        adapt_best_confidence=0.0        
         adapt_result = self._adapt_intent_engine.determine_intent(text)
         for a in adapt_result:
-            print (a)
+            # print (a)
+            if a["confidence"] > adapt_best_confidence:
+                adapt_best_confidence=a["confidence"]
 
-        print ("evaluating: %s with padatious:" % text)
+
+        # example result
+        # {'sent': "beth yw ' r tywydd", 'name': 'beth.ywr.tywydd', 'conf': 1.0, 'matches': {'tywydd_keyword': 'tywydd?'}}
+        # 
+        #print ("evaluating: %s with padatious:" % text)
         padatious_result = self._intents_container.calc_intent(text)
-        print (padatious_result)
+        padatious_best_confidence=padatious_result.conf
+        if adapt_best_confidence > padatious_best_confidence:
+            padatious_result.conf=adapt_best_confidence
 
         return padatious_result
 
