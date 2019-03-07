@@ -23,8 +23,9 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'tywydd')
         self.load_skill(skills_root_dir, 'newyddion')
         self.load_skill(skills_root_dir, 'amser')
+        self.load_skill(skills_root_dir, 'larwm')
 
-        self.initialize_recordings_database()
+        #self.initialize_recordings_database()
 
 
     def load_skill(self, skills_root_dir, skillname):

@@ -56,7 +56,10 @@ class RecordingsDatabase(object):
 
         db_data = []
         for s in sentences:
-           db_data.append((self.hash(s), s)) 
+           guid=self.hash(s)
+           if (guid, s) in db_data:
+               continue
+           db_data.append((guid, s)) 
            
         sql_insert = "INSERT INTO Sentences (guid, sentence) VALUES (%s, %s)"
         self.execute_many_sql(sql_insert, db_data)
