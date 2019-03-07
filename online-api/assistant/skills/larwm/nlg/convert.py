@@ -32,6 +32,14 @@ HANNER_CHWARTER_LOOKUP={
     'hanner':30
 }    
 
+HANNER_NOS_DYDD_LOOKUP={
+    'hanner nos':0,
+    'canol nos':0,
+    'ganol nos':0,
+    'hanner dydd':12,
+    'ganol dydd':12,
+    'canol dydd':12
+}  
 
 def convertTo24hr(hour, day_period_string):
     if day_period_string=='yn y prynhawn' or day_period_string=="gyda'r nos":

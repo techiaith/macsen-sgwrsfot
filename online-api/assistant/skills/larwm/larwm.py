@@ -16,35 +16,51 @@ class larwm_skill(Skill):
 
 
     def handle(self, intent_parser_result, latitude, longitude):
-
-        skill_response = []
-        print (intent_parser_result.sent)
+        skill_response=[]
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
 
-        print (intent_parser_result.name, context)
-
-        hour=convert.HOUR_LOOKUP[context["hour"]]
-        hour=convert.convertTo24hr(hour, context["day_period"])
-        if context["i_wedi"]=='i':
-            hour=hour-1
-
-        print (context["hanner_chwarter"])
-
-        minutes = convert.convertHannerChwarter(context["hanner_chwarter"], context["i_wedi"])
-
-        alarm_time = datetime.datetime.now()
-        alarm_time.hour=hour
-        alarm_time.minutes=minutes
-
+        if 'hour' in context.keys():
+            alarm_time, alarm_time_description=self.handle_time_with_hours(context)
+        elif 'hanner_nos_dydd' in context.keys():
+            alarm_time, alarm_time_description=self.handle_mid_time(context)
 
         skill_response.append({
-            'title':"Am gosod larwm",
-            'description':'',
-            'alarmtime':
-            'url':''
+            'title':"Gosod larwm",
+            'description':'Am gosod larwm am %s' % alarm_time_description,
+            'alarmtime':'{:%Y-%m-%d %H:%M%z}'.format(alarm_time),
         })
 
         return skill_response
+
+
+    def handle_mid_time(self, context):
+        alarm_time = datetime.datetime.now()
+        hours=convert.HANNER_NOS_DYDD_LOOKUP[context["hanner_nos_dydd"]]
+        minutes=0
+
+        alarm_time=alarm_time.replace(hour=hours)
+        alarm_time=alarm_time.replace(minute=minutes)
+        
+        alarm_time_full='%s' % (context["hanner_nos_dydd"])
+
+        return alarm_time, alarm_time_full
+      
+
+    def handle_time_with_hours(self, context):
+        alarm_time = datetime.datetime.now()
+        hours=convert.HOUR_LOOKUP[context["hour"]]
+        hours=convert.convertTo24hr(hours, context["day_period"])
+        if context["i_wedi"]=='i':
+            hours=hours-1
+
+        minutes = convert.convertHannerChwarter(context["hanner_chwarter"], context["i_wedi"])
+
+        alarm_time=alarm_time.replace(hour=hours)
+        alarm_time=alarm_time.replace(minute=minutes)
+
+        alarm_time_full='%s %s %s %s' % (context["hanner_chwarter"], context["i_wedi"], context["hour"], context["day_period"])
+
+        return alarm_time, alarm_time_full
 
