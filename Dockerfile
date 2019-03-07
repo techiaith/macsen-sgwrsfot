@@ -49,7 +49,7 @@ RUN mkdir -p /opt/padatious
 WORKDIR /opt/padatious/
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle pytz python-dateutil PyMySQL
+RUN pip3 install pyowm feedparser jsonpickle pytz python-dateutil PyMySQL spotipy
 
 CMD bash
 

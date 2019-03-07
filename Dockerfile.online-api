@@ -33,7 +33,7 @@ RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle python-dateutil PyMySQL
+RUN pip3 install pyowm feedparser jsonpickle python-dateutil PyMySQL spotipy
 
 RUN mkdir -p /opt/skills-online-api
 WORKDIR /opt/skills-online-api
