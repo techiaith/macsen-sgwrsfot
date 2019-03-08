@@ -24,6 +24,7 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'newyddion')
         self.load_skill(skills_root_dir, 'amser')
         self.load_skill(skills_root_dir, 'spotify')
+        self.load_skill(skills_root_dir, 'larwm')
 
         self.initialize_recordings_database()
 
