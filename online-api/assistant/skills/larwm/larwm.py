@@ -26,10 +26,16 @@ class larwm_skill(Skill):
         elif 'hanner_nos_dydd' in context.keys():
             alarm_time, alarm_time_description=self.handle_mid_time(context)
 
+        alarm_time_result = {
+            'string': '{:%Y-%m-%d %H:%M%z}'.format(alarm_time),
+            'hour':alarm_time.hour,
+            'minutes':alarm_time.minute
+        }
+        
         skill_response.append({
             'title':"Gosod larwm",
             'description':'Am gosod larwm am %s' % alarm_time_description,
-            'alarmtime':'{:%Y-%m-%d %H:%M%z}'.format(alarm_time),
+            'alarmtime':alarm_time_result
         })
 
         return skill_response
@@ -52,15 +58,21 @@ class larwm_skill(Skill):
         alarm_time = datetime.datetime.now()
         hours=convert.HOUR_LOOKUP[context["hour"]]
         hours=convert.convertTo24hr(hours, context["day_period"])
-        if context["i_wedi"]=='i':
-            hours=hours-1
 
-        minutes = convert.convertHannerChwarter(context["hanner_chwarter"], context["i_wedi"])
+        if "i_wedi" in context:
+            if context["i_wedi"]=='i':
+                hours=hours-1
+
+        alarm_time_description=''
+        if "hanner_chwarter" in context and "i_wedi" in context:
+            alarm_time_description='%s %s %s %s' % (context["hanner_chwarter"], context["i_wedi"], context["hour"], context["day_period"])
+            minutes = convert.convertHannerChwarter(context["hanner_chwarter"], context["i_wedi"])
+        else:
+            alarm_time_description="%s %s" % (context["hour"], context["day_period"])
+            minutes = 0
 
         alarm_time=alarm_time.replace(hour=hours)
         alarm_time=alarm_time.replace(minute=minutes)
 
-        alarm_time_full='%s %s %s %s' % (context["hanner_chwarter"], context["i_wedi"], context["hour"], context["day_period"])
-
-        return alarm_time, alarm_time_full
+        return alarm_time, alarm_time_description
 
