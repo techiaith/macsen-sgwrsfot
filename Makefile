@@ -24,7 +24,7 @@ run-online-api:
 		--link skills-online-mysql:mysql \
 		-v ${PWD}/recordings/:/recordings \
 		-d -p 5455:8008  \
-		techiaith/skills-online-api bash
+		techiaith/skills-online-api 
 
 stop-online-api:
 	docker stop skills-online-api

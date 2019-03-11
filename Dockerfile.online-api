@@ -56,5 +56,5 @@ WORKDIR /opt/skills-online-api
 
 EXPOSE 8008
 
-#CMD ["/bin/bash", "-c", "/opt/skills-online-api/start.sh"]
+CMD ["/bin/bash", "-c", "/opt/skills-online-api/start.sh"]
 
