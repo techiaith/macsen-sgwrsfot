@@ -20,7 +20,7 @@ class Brain(object):
         self.nlp = NaturalLanguageProcessing()
 
         skills_root_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'skills')
-        
+
         self.load_skill(skills_root_dir, 'tywydd')
         self.load_skill(skills_root_dir, 'newyddion')
         self.load_skill(skills_root_dir, 'amser')
@@ -28,7 +28,7 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'larwm')
 
         self.mysql_db = RecordingsDatabase()
-        initialize_recordings_database_task.delay(self.expand_intents())
+        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
 
 
     def load_skill(self, skills_root_dir, skillname):

@@ -9,7 +9,7 @@ class NaturalLanguageProcessing(object):
     def __init__(self):
         self.tokenization = Tokenization()
         self.lemmatization = Lemmatization()
-
+      
 
     def get_lemmatization(self):
         return self.lemmatization
@@ -25,4 +25,5 @@ class NaturalLanguageProcessing(object):
         for t in toks:
             lemma_toks.append(self.lemmatization.lemmatize(t))
         return self.tokenization.detokenize(lemma_toks)
-          
+         
+

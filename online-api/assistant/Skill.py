@@ -13,6 +13,7 @@ from adapt.engine import DomainIntentDeterminationEngine
 from padatious import IntentContainer
 from padatious.util import expand_parentheses
 
+from nlp.cy.cysill import CysillArleinAPI
 
 
 class EntitiesDict(dict):
@@ -31,6 +32,7 @@ class Skill(object):
         self._intents_container = None
         self._adapt_intent_engine = None
 
+
         self.initialize_intent_parser()
 
 
@@ -40,6 +42,10 @@ class Skill(object):
 
     def initialize_intent_parser(self):
        
+        cysill = CysillArleinAPI()
+        ignore_dict_file_path=os.path.join(self._root_dir, 'ignore.dict')
+        cysill.open_ignore_words(ignore_dict_file_path)
+
         self._intents_container = IntentContainer("%s_cache" % self._name)
 
         self._adapt_intent_engine = DomainIntentDeterminationEngine()
@@ -55,14 +61,17 @@ class Skill(object):
             for entity_name, entities_array in self.intent_training_file_content(intent_file_path, 'entities'):
                 #print ("add entity %s, %s " % (entity_name, entities_array))
                 self._intents_container.add_entity(entity_name, entities_array)
+                cysill.add_words_to_ignore(entities_array) 
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
                         # print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, 'keyword', domain=self._name)
+
                  
             intent=intent_builder.require('keyword').build()
             self._adapt_intent_engine.register_intent_parser(intent, domain=self._name) 
- 
+
+        cysill.save_ignore_words(ignore_dict_file_path)
         self._intents_container.train()
 
 
