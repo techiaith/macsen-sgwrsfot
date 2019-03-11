@@ -11,6 +11,7 @@ from RecordingsDatabase import RecordingsDatabase
 from nlp.cy.nlp import NaturalLanguageProcessing
 from nlp.cy.cysill import CysillArleinAPI
 
+from skills_assistant_tasks import initialize_recordings_database_task
 
 class Brain(object):
 
@@ -27,6 +28,7 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'larwm')
 
         self.mysql_db = RecordingsDatabase()
+        initialize_recordings_database_task.delay(self.expand_intents())
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -34,28 +36,6 @@ class Brain(object):
         class_ = getattr(skill_python_module, skillname + '_skill')
         instance = class_(skills_root_dir, skillname, self.nlp)
         self.skills[skillname] = instance
-
-
-    def initialize_recordings_database(self):
-        #print("creating db....") 
-        all_sentences = self.expand_intents()
-        proofed_sentences = []
-        cysill_api = CysillArleinAPI()
-
-        for s in all_sentences:
-             if len(s) == 0:
-                 continue
-
-             if '{' in s and '}' in s:
-                continue
-
-             errors = cysill_api.get_errors(s) 
-             if (len(errors)) == 0:
-                 proofed_sentences.append(s)
-             else:
-                 print ("Error: %s" % s)
-                
-        self.mysql_db.initialize(proofed_sentences)
 
 
     def get_unrecorded_sentence(self, uid):

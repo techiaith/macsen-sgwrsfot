@@ -36,14 +36,14 @@ RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 # Skills
 
 RUN mkdir -p /opt/skills-online-api
-WORKDIR /opt/skills-online-api
 ADD online-api /opt/skills-online-api
-ADD online-api/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+WORKDIR /opt/skills-online-api
 RUN pip3 install -r requirements.txt 
 ENV PYTHONPATH="${PYTHONPATH}:/opt/skills-online-api/assistant"
 
 RUN mkdir -p /var/log/gunicorn \
- && touch /var/log/gunicorn/skills-online-api.error.log
+    && mkdir -p /var/log/celery \
+    && touch /var/log/gunicorn/skills-online-api.error.log
 
 
 # estyn data defnyddiol ar gyfer rhai sgiliau / 
@@ -55,5 +55,6 @@ RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
 WORKDIR /opt/skills-online-api
 
 EXPOSE 8008
-CMD ["/usr/bin/supervisord"]
+
+#CMD ["/bin/bash", "-c", "/opt/skills-online-api/start.sh"]
 
