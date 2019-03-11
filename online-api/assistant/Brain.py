@@ -26,7 +26,7 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'spotify')
         self.load_skill(skills_root_dir, 'larwm')
 
-        self.initialize_recordings_database()
+        self.mysql_db = RecordingsDatabase()
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -55,7 +55,6 @@ class Brain(object):
              else:
                  print ("Error: %s" % s)
                 
-        self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize(proofed_sentences)
 
 

@@ -5,6 +5,7 @@ RUN apt-get update \
  && apt-get install -y \
 	git supervisor python3 python3-pip python3-dev \
         cmake wget curl locales vim zip zlib1g-dev \
+        rabbitmq-server \
  && pip3 install --upgrade pip
 
 
@@ -33,7 +34,6 @@ RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
 
 # Skills
-RUN pip3 install pyowm feedparser jsonpickle python-dateutil PyMySQL spotipy
 
 RUN mkdir -p /opt/skills-online-api
 WORKDIR /opt/skills-online-api

@@ -8,6 +8,8 @@ import cherrypy
 import logging
 
 from handlers import callback_handler
+from skills_assistant_tasks import initialize_recordings_database
+
 from assistant.Brain import Brain
 from assistant.RecordingsDatabase import RecordingsDatabase
 
@@ -17,6 +19,7 @@ class SkillsAPI(object):
     def __init__(self):
         self.brain = Brain()
         self.recordings_database = RecordingsDatabase()
+        initialize_recordings_database_task.delay(self.brain)
 
  
     @cherrypy.expose
