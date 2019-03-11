@@ -17,6 +17,8 @@ class larwm_skill(Skill):
 
     def handle(self, intent_parser_result, latitude, longitude):
         skill_response=[]
+        alarm_time = datetime.datetime.now()
+        alarm_time_description=''
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
