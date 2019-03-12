@@ -1,10 +1,10 @@
-#from celery import Celery
+from celery import Celery
 from RecordingsDatabase import RecordingsDatabase
 from nlp.cy.cysill import CysillArleinAPI
 
-#app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
+app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
 
-#@app.task
+@app.task
 def initialize_recordings_database_task(all_sentences, ignore_dictionary_file_path):
 
     mysql_db = RecordingsDatabase()

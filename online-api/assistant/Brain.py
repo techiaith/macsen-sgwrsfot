@@ -30,7 +30,7 @@ class Brain(object):
         self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize()
 
-        initialize_recordings_database_task(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
+        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
 
 
     def load_skill(self, skills_root_dir, skillname):
