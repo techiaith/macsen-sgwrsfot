@@ -1,5 +1,4 @@
-(Gosod|Gosoda) {larwm_keyword} am {hour} {day_period}
-(Gosod|Gosoda) {larwm_keyword} am {hanner_chwarter} {i_wedi} {hour} {day_period}
-(Gosod|Gosoda) {larwm_keyword} am {minutes} munud {i_wedi} {hour} {day_period}
-(Gosod|Gosoda) {larwm_keyword} am {pum_munud_ar_ugain} {i_wedi} {hour} {day_period}
+(Gosod|Gosoda) {larwm_keyword} am {hour_morning} yn y bore
+(Gosod|Gosoda) {larwm_keyword} am {hour_afternoon} yn y prynhawn
+(Gosod|Gosoda) {larwm_keyword} am {hour_evening} yn y nos
 (Gosod|Gosoda) {larwm_keyword} am {hanner_nos_dydd}
