@@ -58,7 +58,7 @@ class RecordingsDatabase(object):
     def add_skill_sentences(self, skill_name, sentences):
         db_data = []
         for s in sentences:
-           guid=self.hash(skill_name + "|" + s)
+           guid=self.hash(s)
            if (guid, s) in db_data:
                continue
            db_data.append((guid, skill_name, s)) 
