@@ -28,7 +28,9 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'larwm')
 
         self.mysql_db = RecordingsDatabase()
-        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
+        self.mysql_db.initialize()
+
+        initialize_recordings_database_task(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -74,10 +76,11 @@ class Brain(object):
 
 
     def expand_intents(self, include_additional_entities=False):
-        result = []
+        result = {}
         for name in self.skills.keys():
             skill = self.skills.get(name)
-            result = result + skill.expand_intents(include_additional_entities)
+            result[name] = skill.expand_intents(include_additional_entities)
+        print (result)
         return result
 
 

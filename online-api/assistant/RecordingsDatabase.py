@@ -17,11 +17,10 @@ class RecordingsDatabase(object):
         pass
 
 
-    def initialize(self, sentences):
-        print ("RecordingDatabase init")
+    def initialize(self):
         self.create_database_if_not_exists()
         self.create_recorded_sentences_table_if_not_exists()
-        self.create_sentences_tables(sentences)
+        self.create_sentences_table()
 
 
     def create_database_if_not_exists(self):
@@ -41,7 +40,7 @@ class RecordingsDatabase(object):
               )""")
 
 
-    def create_sentences_tables(self, sentences):
+    def create_sentences_table(self):
         self.execute_sql("""
               DROP TABLE IF EXISTS Sentences
               """)
@@ -50,19 +49,23 @@ class RecordingsDatabase(object):
               CREATE TABLE Sentences 
               (
                   guid VARCHAR(100) NOT NULL, 
+                  skill_name VARCHAR(50) NOT NULL,
                   sentence VARCHAR(10000), 
                   PRIMARY KEY (guid)
               )""")
 
+
+    def add_skill_sentences(self, skill_name, sentences):
         db_data = []
         for s in sentences:
-           guid=self.hash(s)
+           guid=self.hash(skill_name + "|" + s)
            if (guid, s) in db_data:
                continue
-           db_data.append((guid, s)) 
+           db_data.append((guid, skill_name, s)) 
            
-        sql_insert = "INSERT INTO Sentences (guid, sentence) VALUES (%s, %s)"
+        sql_insert = "INSERT INTO Sentences (guid, skill_name, sentence) VALUES (%s, %s, %s)"
         self.execute_many_sql(sql_insert, db_data)
+
 
     def select_sentences(self):
         result = []

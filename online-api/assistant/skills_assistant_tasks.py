@@ -1,29 +1,39 @@
-from celery import Celery
+#from celery import Celery
 from RecordingsDatabase import RecordingsDatabase
 from nlp.cy.cysill import CysillArleinAPI
 
-app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
+#app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
 
-@app.task
+#@app.task
 def initialize_recordings_database_task(all_sentences, ignore_dictionary_file_path):
-    proofed_sentences = []
 
     mysql_db = RecordingsDatabase()
+
     cysill_api = CysillArleinAPI()
     cysill_api.open_ignore_words(ignore_dictionary_file_path)
 
-    for s in all_sentences:
-        if len(s) == 0:
-            continue
+    for skill_name, skill_sentences in all_sentences.items():
+        print (skill_name)
+        print (skill_sentences) 
+        proofed_sentences = []
 
-        if '{' in s and '}' in s:
-            continue
+        for s in skill_sentences:
+            if len(s) == 0:
+                continue
 
-        errors = cysill_api.get_errors(s)
-        if (len(errors)) == 0:
-           proofed_sentences.append(s)
-        else:
-           print ("Error: %s" % s)
+            if '{' in s and '}' in s:
+                continue
 
-    mysql_db.initialize(proofed_sentences)
+            try:
+                errors = cysill_api.get_errors(s)
+                if (len(errors)) == 0:
+                    print (s)
+                    proofed_sentences.append(s)
+                else:
+                    print ("Error: %s" % s)
+            except:
+                print ("Exception...")
+
+        mysql_db.add_skill_sentences(skill_name, proofed_sentences)
+
 

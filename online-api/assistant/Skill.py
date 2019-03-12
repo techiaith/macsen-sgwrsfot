@@ -32,7 +32,6 @@ class Skill(object):
         self._intents_container = None
         self._adapt_intent_engine = None
 
-
         self.initialize_intent_parser()
 
 
@@ -41,7 +40,6 @@ class Skill(object):
 
 
     def initialize_intent_parser(self):
-       
         cysill = CysillArleinAPI()
         ignore_dict_file_path=os.path.join(self._root_dir, 'ignore.dict')
         cysill.open_ignore_words(ignore_dict_file_path)
@@ -67,7 +65,6 @@ class Skill(object):
                         # print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, 'keyword', domain=self._name)
 
-                 
             intent=intent_builder.require('keyword').build()
             self._adapt_intent_engine.register_intent_parser(intent, domain=self._name) 
 
@@ -100,7 +97,7 @@ class Skill(object):
 
     def expand_intents(self, include_additional_entities=False):
         # load entities first in the file and build a dictionary
-        result = []
+        result = set()
         entities_dict = dict()
 
         for intent_name, intent_file_path in self.get_intent_names():
@@ -131,10 +128,11 @@ class Skill(object):
                             permutations = [dict(zip(keys, v)) for v in itertools.product(*values)]
                             for p in permutations:
                                 entities_dict_permutation = EntitiesDict(p)
-                                result.append(sentence.format(**entities_dict_permutation))
+                                result.add(sentence.format(**entities_dict_permutation))
                         else:
-                            result.append(sentence)
-        return result 
+                            result.add(sentence)
+
+        return list(result) 
 
 
     def get_additional_entities(self, fieldname):

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 import json
 from urllib import request
 from urllib.parse import urlencode
@@ -55,13 +56,18 @@ class CysillArleinAPI(object):
             # something went wrong with the API call
             error_messages = u'\n'.join(response['errors'])
             raise ValueError(error_messages)
-    
+
         all_errors=response['result']
         for error in all_errors:
             if error["isSpelling"]:
                 spelling_error=text[error['start']:error['start'] + error['length']]
                 if spelling_error in self.ignore_dictionary:
                     continue
-                errors.append(error)
+            errors.append(error)
 
         return errors
+
+
+if __name__== "__main__":
+    c=CysillArleinAPI()
+    print(c.get_errors(sys.argv[1]))
