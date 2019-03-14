@@ -94,9 +94,9 @@ class tywydd_skill(Skill):
         title_template = ''
         if "placename" in context.keys():
             if context["city"]==context["placename"] or context["city"]==placename_en:
-                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {placename}."
+                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {placename}."
             else:
-                title_template = "Dyma'r tywydd presenol gan OpenWeather ar gyfer {city} ger {placename}."
+                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {city} ger {placename}."
         else:
             title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}."
 
@@ -163,9 +163,9 @@ class tywydd_skill(Skill):
         title_template = ''
         if "placename" in context.keys():
             if context["city"]==context["placename"] or context["city"]==placename_en:
-                title_template = "Dyma tywydd yfory gan OpenWeather ar gyfer {placename}."
+                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {placename}."
             else:
-                title_template = "Dyma tywydd yfory gan OpenWeather ar gyfer {city} ger {placename}."
+                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city} ger {placename}."
         else:
             title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city}."
 
