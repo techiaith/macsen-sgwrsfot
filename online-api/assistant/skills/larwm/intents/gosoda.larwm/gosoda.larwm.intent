@@ -1,4 +1,4 @@
-(Gosod|Gosoda) {larwm_keyword} am {hour_morning} yn y bore
-(Gosod|Gosoda) {larwm_keyword} am {hour_afternoon} yn y prynhawn
-(Gosod|Gosoda) {larwm_keyword} am {hour_evening} yn y nos
-(Gosod|Gosoda) {larwm_keyword} am {hanner_nos_dydd}
+Gosoda {larwm_keyword} am {hour_morning} y bore
+Gosoda {larwm_keyword} am {hour_afternoon} y prynhawn
+Gosoda {larwm_keyword} am {hour_evening} y nos
+Gosoda {larwm_keyword} am {hanner_nos_dydd}
