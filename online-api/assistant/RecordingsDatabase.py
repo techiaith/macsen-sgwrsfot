@@ -72,10 +72,14 @@ class RecordingsDatabase(object):
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
         cursor = cnx.cursor()
         cursor.execute("""
-            SELECT sentence FROM Sentences
+            SELECT sentence FROM Sentences ORDER BY skill_name, sentence
         """)
 
-        result=cursor.fetchall()
+        db_result=cursor.fetchall()
+        result=[]
+        for r in db_result:
+            result.append(r[0])
+ 
         cnx.close()
         return result
          
