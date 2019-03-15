@@ -11,7 +11,7 @@ from RecordingsDatabase import RecordingsDatabase
 from nlp.cy.nlp import NaturalLanguageProcessing
 from nlp.cy.cysill import CysillArleinAPI
 
-#from skills_assistant_tasks import initialize_recordings_database_task
+from skills_assistant_tasks import initialize_recordings_database_task
 
 class Brain(object):
 
@@ -30,7 +30,7 @@ class Brain(object):
         self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize()
 
-        #initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
+        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -69,7 +69,7 @@ class Brain(object):
 
         for key in self.skills.keys():
             adapt_confidence, intent = self.skills[key].calculate_intent(text)
-            print ( key, adapt_confidence, str(intent.conf))
+            print ( key, adapt_confidence, str(intent))
             score=adapt_confidence*intent.conf
             if score > best_score:
                 best_intent = intent

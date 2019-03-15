@@ -20,11 +20,16 @@ class larwm_skill(Skill):
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
-        
-        if 'hour' in context.keys() or 'hanner_nos_dydd' in context.keys():
+
+        hours_key = (h in context.keys() for h in ("hour_morning", "hour_afternoon", "hour_evening"))
+        print ("#####################")
+        print (context)
+        print (hours_key) 
+        print ("#####################")
+        if hours_key or 'hanner_nos_dydd' in context.keys():
             alarm_time=datetime.datetime.now()
             alarm_time_description=''
-            if 'hour' in context.keys():
+            if hours_key:
                 alarm_time, alarm_time_description=self.handle_time_with_hours(context)
             elif 'hanner_nos_dydd' in context.keys():
                 alarm_time, alarm_time_description=self.handle_mid_time(context)
@@ -68,20 +73,28 @@ class larwm_skill(Skill):
 
     def handle_time_with_hours(self, context):
         alarm_time = datetime.datetime.now()
-        hours=convert.HOUR_LOOKUP[context["hour"]]
-        hours=convert.convertTo24hr(hours, context["day_period"])
+        hour_text=''
+        period=''
+        hours=0
 
-        if "i_wedi" in context:
-            if context["i_wedi"]=='i':
-                hours=hours-1
-
-        alarm_time_description=''
-        if "hanner_chwarter" in context and "i_wedi" in context:
-            alarm_time_description='%s %s %s %s' % (context["hanner_chwarter"], context["i_wedi"], context["hour"], context["day_period"])
-            minutes = convert.convertHannerChwarter(context["hanner_chwarter"], context["i_wedi"])
+        if "hour_morning" in context:
+            hour_text=context["hour_morning"]
+            hours=convert.HOUR_LOOKUP[hour_text]
+            period=context["morning_period"]
+        elif "hour_afternoon" in context:
+            hour_text=context["hour_afternoon"]
+            hours=convert.HOUR_LOOKUP[hour_text]
+            hours=hours+12
+            period=context["afternoon_period"]
         else:
-            alarm_time_description="%s %s" % (context["hour"], context["day_period"])
-            minutes = 0
+            hour_text=context["hour_evening"]
+            hours=convert.HOUR_LOOKUP[hour_text]
+            hours=hours+12
+            period=context["evening_period"]
+
+        alarm_time_description="%s %s" % (hour_text, period)
+
+        minutes = 0
 
         alarm_time=alarm_time.replace(hour=hours)
         alarm_time=alarm_time.replace(minute=minutes)

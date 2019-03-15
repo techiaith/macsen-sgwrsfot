@@ -50,7 +50,7 @@ class Skill(object):
         self._adapt_intent_engine.register_domain(self._name)
 
         for intent_name, intent_file_path in self.get_intent_names():
-            # print ("IntentBuilder: %s, %s" % (intent_name, intent_file_path))         
+            #print ("###### IntentBuilder: %s, %s" % (intent_name, intent_file_path))         
             intent_builder = IntentBuilder(intent_name)
             for intent_name, intent_example_sentences_array in self.intent_training_file_content(intent_file_path, 'intent'):
                 #print ("add intent %s, %s" % (intent_name, intent_example_sentences_array))
@@ -59,17 +59,20 @@ class Skill(object):
             for entity_name, entities_array in self.intent_training_file_content(intent_file_path, 'entities'):
                 #print ("add entity %s, %s " % (entity_name, entities_array))
                 self._intents_container.add_entity(entity_name, entities_array)
+
                 cysill.add_words_to_ignore(entities_array) 
+
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        # print ("add keyword %s to %s" % (k, intent_name))
+                        #print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, 'keyword', domain=self._name)
 
             intent=intent_builder.require('keyword').build()
             self._adapt_intent_engine.register_intent_parser(intent, domain=self._name) 
 
-        cysill.save_ignore_words(ignore_dict_file_path)
         self._intents_container.train()
+
+        cysill.save_ignore_words(ignore_dict_file_path)
 
 
     def get_skill_file_content(self, skill_file_path):
@@ -164,5 +167,4 @@ class Skill(object):
 
     def handle(self, intent, latitude, longitude):
         pass 
-
 
