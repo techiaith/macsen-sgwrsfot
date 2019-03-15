@@ -79,10 +79,15 @@ class SkillsAPI(object):
         }
 
         intent_name, output = self.brain.handle(text, longitude, latitude)
+
+        success=True
+        if output is None:
+            success=False
+
         result.update({
             'intent':intent_name,
             'result':output,
-            'success':True
+            'success':success
         })
 
         return result
