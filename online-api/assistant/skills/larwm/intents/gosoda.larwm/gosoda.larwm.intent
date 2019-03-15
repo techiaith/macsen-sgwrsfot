@@ -1,4 +1,4 @@
-Gosoda {larwm_keyword} am {hour_morning} y bore
-Gosoda {larwm_keyword} am {hour_afternoon} y prynhawn
-Gosoda {larwm_keyword} am {hour_evening} y nos
+Gosoda {larwm_keyword} am {hour_morning} (|o'r gloch) (y|yn y) {morning_period}
+Gosoda {larwm_keyword} am {hour_afternoon} (|o'r gloch) (y|yn y) {afternoon_period}
+Gosoda {larwm_keyword} am {hour_evening} (|o'r gloch) (y|yn y) {evening_period}
 Gosoda {larwm_keyword} am {hanner_nos_dydd}
