@@ -153,17 +153,13 @@ class Skill(object):
             if a["confidence"] > adapt_best_confidence:
                 adapt_best_confidence=a["confidence"]
 
-
         # example result
         # {'sent': "beth yw ' r tywydd", 'name': 'beth.ywr.tywydd', 'conf': 1.0, 'matches': {'tywydd_keyword': 'tywydd?'}}
         # 
         #print ("evaluating: %s with padatious:" % text)
         padatious_result = self._intents_container.calc_intent(text)
-        padatious_best_confidence=padatious_result.conf
-        if adapt_best_confidence > padatious_best_confidence:
-            padatious_result.conf=adapt_best_confidence
 
-        return padatious_result
+        return adapt_best_confidence, padatious_result
 
 
     def handle(self, intent, latitude, longitude):

@@ -62,17 +62,18 @@ class Brain(object):
     def determine_intent(self, text):
         best_intent = None
         best_handler = None
+        best_score = 0.0
 
         for key in self.skills.keys():
-            intent = self.skills[key].calculate_intent(text)
-            print ( key, str(intent.conf))
-            if not best_intent:
-                 best_intent = intent
-                 best_handler = key
-            if intent.conf > best_intent.conf:
-                 best_intent = intent
-                 best_handler = key
-        return best_handler, best_intent 
+            adapt_confidence, intent = self.skills[key].calculate_intent(text)
+            print ( key, adapt_confidence, str(intent.conf))
+            score=adapt_confidence*intent.conf
+            if score > best_score:
+                best_intent = intent
+                best_handler = key
+                best_score=score
+
+        return best_handler, best_intent
 
 
     def expand_intents(self, include_additional_entities=False):

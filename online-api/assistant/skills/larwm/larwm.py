@@ -17,28 +17,38 @@ class larwm_skill(Skill):
 
     def handle(self, intent_parser_result, latitude, longitude):
         skill_response=[]
-        alarm_time = datetime.datetime.now()
-        alarm_time_description=''
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
-
-        if 'hour' in context.keys():
-            alarm_time, alarm_time_description=self.handle_time_with_hours(context)
-        elif 'hanner_nos_dydd' in context.keys():
-            alarm_time, alarm_time_description=self.handle_mid_time(context)
-
-        alarm_time_result = {
-            'string': '{:%Y-%m-%d %H:%M%z}'.format(alarm_time),
-            'hour':alarm_time.hour,
-            'minutes':alarm_time.minute
-        }
         
-        skill_response.append({
-            'title':"Gosod larwm",
-            'description':'Am gosod larwm am %s' % alarm_time_description,
-            'alarmtime':alarm_time_result
-        })
+        if 'hour' in context.keys() or 'hanner_nos_dydd' in context.keys():
+            alarm_time=datetime.datetime.now()
+            alarm_time_description=''
+            if 'hour' in context.keys():
+                alarm_time, alarm_time_description=self.handle_time_with_hours(context)
+            elif 'hanner_nos_dydd' in context.keys():
+                alarm_time, alarm_time_description=self.handle_mid_time(context)
+            
+            alarm_time_result = {
+                'string': '{:%Y-%m-%d %H:%M%z}'.format(alarm_time),
+                'hour':alarm_time.hour,
+                'minutes':0
+            }
+
+            skill_response.append({
+                'title':"Gosod larwm",
+                'success':True,
+                'description':'Am gosod larwm am %s' % alarm_time_description,
+                'alarmtime':alarm_time_result
+            })
+
+        else:
+            skill_response.append({
+                'title':"Gosod larwm",
+                'success':False,
+                'description':"Methwyd deall am faint o'r gloch mae angen gosod larwm",
+                'alarmtime':''
+            })
 
         return skill_response
 
