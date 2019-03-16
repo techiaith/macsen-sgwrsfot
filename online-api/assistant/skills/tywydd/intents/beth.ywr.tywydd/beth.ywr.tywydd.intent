@@ -1,4 +1,4 @@
-(Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword}?
-(Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword} {time_present}?
-(Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword} (yn|ym|yng) {placename}?
-(Beth yw'r|Be di'r|Sut mae'r) {tywydd_keyword} {time_present} (yn|ym|yng) {placename}?
+(Beth yw'r|Be di'r|Sut mae'r) tywydd?
+(Beth yw'r|Be di'r|Sut mae'r) tywydd heddiw?
+(Beth yw'r|Be di'r|Sut mae'r) tywydd (yn|ym|yng) {lloeliad}?
+(Beth yw'r|Be di'r|Sut mae'r) tywydd heddiw (yn|ym|yng) {lleoliad}?

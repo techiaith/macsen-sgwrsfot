@@ -6,12 +6,12 @@ import jsonpickle
 
 import importlib
 
-from RecordingsDatabase import RecordingsDatabase
+#from RecordingsDatabase import RecordingsDatabase
 
 from nlp.cy.nlp import NaturalLanguageProcessing
 from nlp.cy.cysill import CysillArleinAPI
 
-from skills_assistant_tasks import initialize_recordings_database_task
+#from skills_assistant_tasks import initialize_recordings_database_task
 
 class Brain(object):
 
@@ -27,10 +27,10 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'spotify')
         self.load_skill(skills_root_dir, 'larwm')
 
-        self.mysql_db = RecordingsDatabase()
-        self.mysql_db.initialize()
+        #self.mysql_db = RecordingsDatabase()
+        #self.mysql_db.initialize()
 
-        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
+        #initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
 
 
     def load_skill(self, skills_root_dir, skillname):

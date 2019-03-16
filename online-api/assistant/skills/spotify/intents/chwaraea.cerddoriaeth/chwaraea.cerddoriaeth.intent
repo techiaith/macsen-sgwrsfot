@@ -1,2 +1,4 @@
-Chwaraea {cerddoriaeth_keyword} {artist_neu_band}
-Chwaraea {cerddoriaeth_keyword} gan {artist_neu_band}
+Chwaraea gerddoriaeth {artist}
+Chwaraea fiwsig {artist}
+Chwaraea gerddoriaeth gan {artist}
+Chwaraea fiwsig gan {artist}

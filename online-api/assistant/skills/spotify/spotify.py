@@ -17,13 +17,13 @@ class spotify_skill(Skill):
 
     def handle(self, intent_parser_result, latitude, longitude):
 
-        # chwaraea.cerddoriaeth {'artist_neu_band': 'Anweledig', 'cerddoriaeth_keyword': 'fiwsig'}
+        # chwaraea.cerddoriaeth {'artist': 'Anweledig'}
         skill_response = []
         context = intent_parser_result.matches
         for key, value in context.items():
             context[key] = context[key].replace("?","")
 
-        data=search_artist(context["artist_neu_band"])
+        data=search_artist(context["artist"])
         items=data['artists']['items']
         for b in items:
             skill_response.append({

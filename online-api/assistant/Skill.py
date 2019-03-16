@@ -13,8 +13,6 @@ from adapt.engine import DomainIntentDeterminationEngine
 from padatious import IntentContainer
 from padatious.util import expand_parentheses
 
-from nlp.cy.cysill import CysillArleinAPI
-
 
 class EntitiesDict(dict):
     def __missing__(self, key):
@@ -40,9 +38,6 @@ class Skill(object):
 
 
     def initialize_intent_parser(self):
-        cysill = CysillArleinAPI()
-        ignore_dict_file_path=os.path.join(self._root_dir, 'ignore.dict')
-        cysill.open_ignore_words(ignore_dict_file_path)
 
         self._intents_container = IntentContainer("%s_cache" % self._name)
 
@@ -51,37 +46,47 @@ class Skill(object):
 
         for intent_name, intent_file_path in self.get_intent_names():
             #print ("###### IntentBuilder: %s, %s" % (intent_name, intent_file_path))         
-            intent_builder = IntentBuilder(intent_name)
+            adapt_intent_builder = IntentBuilder(intent_name)
             for intent_name, intent_example_sentences_array in self.intent_training_file_content(intent_file_path, 'intent'):
                 #print ("add intent %s, %s" % (intent_name, intent_example_sentences_array))
                 self._intents_container.add_intent(intent_name, intent_example_sentences_array)
 
             for entity_name, entities_array in self.intent_training_file_content(intent_file_path, 'entities'):
-                #print ("add entity %s, %s " % (entity_name, entities_array))
+                print ("add entity %s, %s " % (entity_name, entities_array))
+                
                 self._intents_container.add_entity(entity_name, entities_array)
-
-                cysill.add_words_to_ignore(entities_array) 
-
+                
+                # adapt
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        #print ("add keyword %s to %s" % (k, intent_name))
-                        self._adapt_intent_engine.register_entity(k, 'keyword', domain=self._name)
+                        print ("add keyword %s to %s" % (k, intent_name))
+                        self._adapt_intent_engine.register_entity(k, entity_name, domain=self._name)
+                    
+                    adapt_intent_builder.require(entity_name)
 
-            intent=intent_builder.require('keyword').build()
-            self._adapt_intent_engine.register_intent_parser(intent, domain=self._name) 
+            adapt_intent=adapt_intent_builder.build()
+            self._adapt_intent_engine.register_intent_parser(adapt_intent, domain=self._name) 
 
         self._intents_container.train()
 
-        cysill.save_ignore_words(ignore_dict_file_path)
 
-
-    def get_skill_file_content(self, skill_file_path):
+    def get_intent_file_content(self, skill_file_path):
         content_array = []
         with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
             for entry in skill_file:
-                content_array.append(entry.strip())
+                content_array.append(entry)
         return content_array
 
+
+    def get_entities_file_content(self, skill_file_path):
+        content_array = []
+        with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
+            for entry in skill_file:
+                entries, variations=entry.strip().split('|'),[]
+                content_array.append(entries[0])
+                if len(entries) > 1:
+                    content_array.extend(entries[1].split(','))
+        return content_array
 
     def get_intent_names(self):
         intent_root_file_path=os.path.join(self._root_dir, self._name, 'intents')
@@ -94,7 +99,10 @@ class Skill(object):
         for artefact_file_path in os.listdir(artefacts_root_dir):
             if artefact_file_path.endswith('.' + artefact_file_extension):
                 artefact_name = artefact_file_path.replace('.' + artefact_file_extension, '')
-                artefact_file_lines = self.get_skill_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
+                if artefact_file_extension is 'entities':
+                    artefact_file_lines = self.get_entities_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
+                elif artefact_file_extension is 'intent':
+                    artefact_file_lines = self.get_intent_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
                 yield artefact_name, artefact_file_lines
         
 

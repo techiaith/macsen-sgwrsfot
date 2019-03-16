@@ -1,2 +1,2 @@
-(Beth fydd|Beth fydd y|Sut fydd|Sut fydd y) {tywydd_keyword} {time_future_keyword}?
-(Beth fydd|Beth fydd y|Sut fydd|Sut fydd y) {tywydd_keyword} {time_future_keyword} (yn|ym|yng) {placename}?
+(Beth fydd|Beth fydd y|Sut fydd|Sut fydd y) tywydd (fory|yfory)?
+(Beth fydd|Beth fydd y|Sut fydd|Sut fydd y) tywydd (fory/yfory) (yn|ym|yng) {lleoliad}?

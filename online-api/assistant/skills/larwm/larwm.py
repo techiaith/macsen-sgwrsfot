@@ -11,6 +11,7 @@ from padatious import IntentContainer
 
 class larwm_skill(Skill):
 
+
     def __init__(self, root_dir, name, nlp):
         super(larwm_skill, self).__init__(root_dir, name, nlp)
 
@@ -21,15 +22,10 @@ class larwm_skill(Skill):
         for key, value in context.items():
             context[key] = context[key].replace("?","")
 
-        hours_key = (h in context.keys() for h in ("hour_morning", "hour_afternoon", "hour_evening"))
-        print ("#####################")
-        print (context)
-        print (hours_key) 
-        print ("#####################")
-        if hours_key or 'hanner_nos_dydd' in context.keys():
+        if 'awr' or 'hanner_nos_dydd' in context.keys():
             alarm_time=datetime.datetime.now()
             alarm_time_description=''
-            if hours_key:
+            if 'awr' in context.keys():
                 alarm_time, alarm_time_description=self.handle_time_with_hours(context)
             elif 'hanner_nos_dydd' in context.keys():
                 alarm_time, alarm_time_description=self.handle_mid_time(context)
@@ -73,26 +69,14 @@ class larwm_skill(Skill):
 
     def handle_time_with_hours(self, context):
         alarm_time = datetime.datetime.now()
-        hour_text=''
-        period=''
-        hours=0
 
-        if "hour_morning" in context:
-            hour_text=context["hour_morning"]
-            hours=convert.HOUR_LOOKUP[hour_text]
-            period=context["morning_period"]
-        elif "hour_afternoon" in context:
-            hour_text=context["hour_afternoon"]
-            hours=convert.HOUR_LOOKUP[hour_text]
+        hours_text=context["awr"]
+        hours=convert.HOUR_LOOKUP[hours_text]
+        period=context["cyfnod"]
+        if period is not 'bore' and hours < 13:
             hours=hours+12
-            period=context["afternoon_period"]
-        else:
-            hour_text=context["hour_evening"]
-            hours=convert.HOUR_LOOKUP[hour_text]
-            hours=hours+12
-            period=context["evening_period"]
 
-        alarm_time_description="%s %s" % (hour_text, period)
+        alarm_time_description="%s yn %s" % (hours_text, period)
 
         minutes = 0
 
