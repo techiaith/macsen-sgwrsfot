@@ -25,11 +25,17 @@ class spotify_skill(Skill):
 
         data=search_artist(context["artist"])
         items=data['artists']['items']
-        for b in items:
+        if len(items) > 0:
+            for b in items:
+                skill_response.append({
+                    'title':b["name"],
+                    'description':'',
+                    'url':b["uri"]})
+        else:
             skill_response.append({
-                'title':b["name"],
-                'description':'',
-                'url':b["uri"]})
+                'title':'',
+                'description':'Methwyd dod o hyd i fiwsig gan %s ar Spotify' % context["artist"],
+                'url':''})
 
         return skill_response
 
