@@ -32,27 +32,33 @@ class tywydd_skill(Skill):
             context[key] = context[key].replace("?","")
 
         observation, forecasts = self.get_weather_data(context, latitude, longitude)
-        
-        if "time_future" in context.keys():
+       
+        print (intent_parser_result)
+ 
+        if intent_parser_result.name is 'beth.fydd.y.tywydd':
+            print ("trace 1")
             return self.generate_weather_report_for_tomorrow(context, observation, forecasts)
         else:
+            print ("trace 2")
             return self.generate_weather_report_for_today(context, observation, forecasts)
       
 
     def get_weather_data(self, context, latitude, longitude):
         ## get data from OpenWeatherMap API...
-        if "placename" in context.keys():
-            context["placename"] = context["placename"].capitalize()
-            if context["placename"] in self.placenames:
-                placename_en, longitude, latitude = self.placenames[context["placename"]]
+        if "lleoliad" in context.keys():
+            context["lleoliad"] = context["lleoliad"].capitalize()
+            print (context["lleoliad"])
+            if context["lleoliad"] in self.placenames:
+                placename_en, longitude, latitude = self.placenames[context["lleoliad"]]
                 longitude = float(longitude)
                 latitude = float(latitude)
                 observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
                 forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
             else:
-                observation = self.api_get_weather_for_placename(context["placename"])
-                forecasts = self.api_get_forecast_for_placename(context["placename"])
+                observation = self.api_get_weather_for_placename(context["lleoliad"])
+                forecasts = self.api_get_forecast_for_placename(context["lleoliad"])
         else:
+            print ("dim lleoliad")
             observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
             forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
         return observation, forecasts
@@ -92,11 +98,11 @@ class tywydd_skill(Skill):
         context["country"] = l.get_country() 
 
         title_template = ''
-        if "placename" in context.keys():
-            if context["city"]==context["placename"] or context["city"]==placename_en:
-                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {placename}."
+        if "lleoliad" in context.keys():
+            if context["city"]==context["lleoliad"] or context["city"]==placename_en:
+                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {lleoliad}."
             else:
-                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {city} ger {placename}."
+                title_template = "Dyma'r tywydd presenol gan OpenWeatherMap ar gyfer {city} ger {lleoliad}."
         else:
             title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}."
 
@@ -161,11 +167,11 @@ class tywydd_skill(Skill):
         context["country"] = l.get_country()
 
         title_template = ''
-        if "placename" in context.keys():
-            if context["city"]==context["placename"] or context["city"]==placename_en:
-                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {placename}."
+        if "lleoliad" in context.keys():
+            if context["city"]==context["lleoliad"] or context["city"]==placename_en:
+                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {lleoliad}."
             else:
-                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city} ger {placename}."
+                title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city} ger {lleoliad}."
         else:
             title_template = "Dyma tywydd yfory gan OpenWeatherMap ar gyfer {city}."
 
@@ -252,7 +258,7 @@ class tywydd_skill(Skill):
 
     def get_additional_entities(self, entity_name): 
        result = []
-       if entity_name == 'placename':
+       if entity_name == 'lleoliad':
            for p in sorted(self.placenames.keys()):
                result.append(p)
                mutations = self._nlp.get_lemmatization().get_mutations(p)

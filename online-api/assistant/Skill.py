@@ -52,14 +52,13 @@ class Skill(object):
                 self._intents_container.add_intent(intent_name, intent_example_sentences_array)
 
             for entity_name, entities_array in self.intent_training_file_content(intent_file_path, 'entities'):
-                print ("add entity %s, %s " % (entity_name, entities_array))
-                
+                #print ("add entity %s, %s " % (entity_name, entities_array))
                 self._intents_container.add_entity(entity_name, entities_array)
                 
                 # adapt
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        print ("add keyword %s to %s" % (k, intent_name))
+                        #print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, entity_name, domain=self._name)
                     
                     adapt_intent_builder.require(entity_name)
