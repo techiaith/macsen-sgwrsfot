@@ -9,26 +9,6 @@ class Translator:
        self.initialize() 
 
 
-    def translate(self, own_field, text):
-        text = text.lower()
-        try:
-            return self._translations[own_field][text].strip()
-        except:
-            return text
-
-    def generate_phrase(self, own_field, text):
-        text = text.lower()
-        try:
-            translation = self._translations[own_field][text].strip()
-            if own_field is 'status':
-                if text == 'clear':
-                   return "hi'n glir"
-                else:
-                   return "yna %s" % translation
-        except:
-            return text
-
-
     def initialize(self):
         trans_files_dir = os.path.dirname(os.path.realpath(__file__))
         for trans_file in os.listdir(trans_files_dir):
@@ -42,8 +22,16 @@ class Translator:
         with open(file_path, 'r', encoding='utf-8') as trans_file:
             for trans in trans_file:
                 en,cy = tuple(trans.split('|'))
-                en = en.lower()
-                cy = cy.lower()
+                en = en.lower().strip()
+                cy = cy.lower().strip()
                 translations[en]=cy
         return translations 
-            
+    
+
+    def translate(self, own_field, text):
+        text = text.lower()
+        try:
+            return self._translations[own_field][text].strip()
+        except:
+            return text
+

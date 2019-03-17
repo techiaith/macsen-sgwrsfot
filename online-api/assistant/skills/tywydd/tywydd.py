@@ -15,6 +15,11 @@ from .owm.apikey import OWM_API_KEY
 from padatious import IntentContainer
 
 
+weather_status_cy_replace = {'cymylau':'cymylog', 'glaw':'bwrw glaw'}
+weather_adjs = ["clir", "cymylog"]
+weather_requires_hin = ["bwrw glaw", "clir", "cymylog"]
+
+
 class tywydd_skill(Skill):
 
     def __init__(self, root_dir, name, nlp):
@@ -33,13 +38,9 @@ class tywydd_skill(Skill):
 
         observation, forecasts = self.get_weather_data(context, latitude, longitude)
        
-        print (intent_parser_result)
- 
-        if intent_parser_result.name is 'beth.fydd.y.tywydd':
-            print ("trace 1")
+        if intent_parser_result.name=='beth.fydd.y.tywydd':
             return self.generate_weather_report_for_tomorrow(context, observation, forecasts)
         else:
-            print ("trace 2")
             return self.generate_weather_report_for_today(context, observation, forecasts)
       
 
@@ -58,10 +59,10 @@ class tywydd_skill(Skill):
                 observation = self.api_get_weather_for_placename(context["lleoliad"])
                 forecasts = self.api_get_forecast_for_placename(context["lleoliad"])
         else:
-            print ("dim lleoliad")
             observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
             forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
         return observation, forecasts
+
 
     def api_get_weather_at_coords(self, latitude, longitude):
         owm = pyowm.OWM(OWM_API_KEY)
@@ -106,13 +107,17 @@ class tywydd_skill(Skill):
         else:
             title_template = "Dyma'r tywydd presennol gan OpenWeatherMap ar gyfer {city}."
 
-        status_cy = self.translator.generate_phrase('status', w.get_status())
-        temperature = float(w.get_temperature('celsius').get("temp"))
-        description_template = "Mae %s gyda'r tymheredd yn %s gradd Celsius"
+        description_template = "Mae %s ac mae'r tymheredd yn %s gradd Celsius"
+        
+        status_cy, temperature, time = self.nlg_weather_values(
+            w.get_status(),
+            float(w.get_temperature('celsius').get("temp"))
+        )
         if temperature < 0:
             description_template = description_template + " o dan y rhewbwynt"
             temperature = abs(temperature)
-        description = description_template % (status_cy, self._nlp.tokenization.round_float_token(temperature))
+
+        description = description_template % (status_cy, temperature)
 
         #
         skill_response.append({
@@ -127,19 +132,16 @@ class tywydd_skill(Skill):
             if forecast_weather_count > 1:
                 break
 
-            temperature = forecast_weather.get_temperature('celsius').get('temp')
-            temperature = self._nlp.tokenization.round_float_token(temperature)
-
-            status = forecast_weather.get_status()
-            status = self.translator.generate_phrase('status', status)
-
-            time = forecast_weather.get_reference_time(timeformat='iso')
-            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
-    
             if forecast_weather_count==0:
-                description_template = "Am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+                description_template = "Am {}, bydd {} gyda'r tymheredd yn {} gradd Celsius"
             else:
-                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+                description_template = "Yna, am {} bydd {} â'r tymheredd yn {} gradd Celsius"
+
+            status_cy, temperature, time = self.nlg_weather_values(
+                forecast_weather.get_status(),
+                forecast_weather.get_temperature('celsius').get('temp'),
+                forecast_weather.get_reference_time(timeformat='iso')
+            )
 
             if temperature < 0:
                 description_template = description_template + " o dan y rhewbwynt"
@@ -149,7 +151,7 @@ class tywydd_skill(Skill):
 
             skill_response.append({
                 'title' : '',
-                'description' : description_template.format(time, status, temperature),
+                'description' : description_template.format(time, status_cy, temperature),
                 'url' : ''}
             )
             forecast_weather_count += 1
@@ -187,27 +189,25 @@ class tywydd_skill(Skill):
         time_tomorrow = time_now + timedelta(days=1)
         forecast_weather_count=0
         for forecast_weather in forecasts:
-
             time = forecast_weather.get_reference_time(timeformat='iso')
             dt = self._nlp.tokenization.token_to_datetime(time)
+
             if dt < time_tomorrow:
                 continue 
 
             if forecast_weather_count > 1:
                 break
             
-            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
-
-            temperature = forecast_weather.get_temperature('celsius').get('temp')
-            temperature = self._nlp.tokenization.round_float_token(temperature)
-
-            status = forecast_weather.get_status()
-            status = self.translator.generate_phrase('status', status)
-
             if forecast_weather_count==0:
-                description_template = "Fory am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+                description_template = "Yfory am {} bydd {} a'r tymheredd fydd {} gradd Celsius"
             else:
-                description_template = "Ac yna am {} bydd {} gyda'r tymheredd yn {} gradd Celsius"
+                description_template = "Yn hwyrach yfory am {} bydd {} a'r tymheredd yn {} gradd Celsius"
+
+            status_cy, temperature, time = self.nlg_weather_values(
+                forecast_weather.get_status(),
+                forecast_weather.get_temperature('celsius').get('temp'),
+                forecast_weather.get_reference_time(timeformat='iso')
+            )
 
             if temperature < 0:
                 description_template = description_template + " o dan y rhewbwynt"
@@ -217,14 +217,40 @@ class tywydd_skill(Skill):
 
             skill_response.append({
                 'title' : '',
-                'description' : description_template.format(time, status, temperature),
+                'description' : description_template.format(time, status_cy, temperature),
                 'url' : ''}
             )
+
             forecast_weather_count += 1
 
         return skill_response
 
 
+    def add_hin(self, status_cy):
+        if status_cy in weather_adjs:
+            status_cy = self._nlp.lemmatization.soft_mutate(status_cy)
+        status_cy = "hi'n " + status_cy
+        return status_cy
+
+
+    def nlg_status_cy(self, status_cy):
+        status_cy=status_cy.replace(' ','.')
+        if status_cy in weather_status_cy_replace.keys():
+            status_cy = weather_status_cy_replace[status_cy]
+        if status_cy in weather_requires_hin:
+            status_cy=self.add_hin(status_cy)
+        return status_cy    
+
+
+    def nlg_weather_values(self, status, temperature, time=''):
+        status_cy = self.translator.translate('status', status)
+        status_cy = self.nlg_status_cy(status_cy)
+        temperature = self._nlp.tokenization.round_float_token(temperature)
+        if len(time)>0:
+            time = self._nlp.tokenization.datetime_token_to_hours_words(time)
+        return status_cy, temperature, time
+ 
+    
     def preprocess(self, placename):
         placename = placename.strip()
         if ',' in placename:
@@ -268,4 +294,5 @@ class tywydd_skill(Skill):
            return []
 
        return result
+
 
