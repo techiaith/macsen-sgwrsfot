@@ -6,7 +6,7 @@ import jsonpickle
 
 import importlib
 
-from RecordingsDatabase import RecordingsDatabase
+#from RecordingsDatabase import RecordingsDatabase
 
 from nlp.cy.nlp import NaturalLanguageProcessing
 from nlp.cy.cysill import CysillArleinAPI
