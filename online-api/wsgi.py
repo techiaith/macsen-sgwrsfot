@@ -24,6 +24,7 @@ class SkillsAPI(object):
     def index(self):
         msg = "perform_skill/?text=.....\n"
         msg = msg + "get_all_sentences/?<additional_entities=True|False>i\n"
+        msg = msg + "get_all_skills_intents_sentences/\n"
         msg = msg + "get_unrecorded_sentence/?uid=.....\n"
         return msg
 
@@ -59,6 +60,20 @@ class SkillsAPI(object):
             'result':sentences,
             'success':True
         })
+        return result
+
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out(handler=callback_handler)
+    def get_all_skills_intents_sentences(self, **kwargs):
+        skills_intents_sentences = self.recordings_database.select_skills_intents_sentences()
+        result = {
+                'version': 1
+        }
+        result.update({
+            'result':skills_intents_sentences,
+            'success':True
+            })
         return result
 
 

@@ -73,18 +73,45 @@ class RecordingsDatabase(object):
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
         cursor = cnx.cursor()
         cursor.execute("""
-            SELECT skill_name, sentence FROM Sentences ORDER BY skill_name, sentence
+            SELECT sentence FROM Sentences ORDER BY skill_name, intent_name, sentence
         """)
 
         db_result=cursor.fetchall()
         result=[]
         for r in db_result:
-            result.append(r[0])
+            result.append(r)
  
         cnx.close()
         return result
-         
+        
 
+    def select_skills_intents_sentences(self):
+        skills={}
+        
+        cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
+        cursor = cnx.cursor()
+        cursor.execute("""
+            SELECT skill_name, intent_name, sentence FROM Sentences ORDER BY skill_name, intent_name, sentence
+        """)
+
+        db_result=cursor.fetchall()
+        for skill_name, intent_name, sentence in db_result:
+            if skill_name not in skills:
+                intents={}
+                sentences=[]
+                intents[intent_name]=sentences
+                skills[skill_name]=intents
+            
+            if intent_name not in skills[skill_name]:
+                sentences=[]
+                skills[skill_name][intent_name]=sentences
+ 
+            skills[skill_name][intent_name].append(sentence)
+
+        cnx.close()
+        return skills
+
+    
     def select_skills_sentences(self):
         result = []
 
@@ -138,4 +165,4 @@ class RecordingsDatabase(object):
 
 if __name__ == "__main__":
     db=RecordingsDatabase()
-    print (db.select_sentences())
+    print (db.select_skills_intents_sentences())
