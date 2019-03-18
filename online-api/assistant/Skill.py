@@ -107,7 +107,7 @@ class Skill(object):
 
     def expand_intents(self, include_additional_entities=False):
         # load entities first in the file and build a dictionary
-        result = set()
+        result = dict()   #set()
         entities_dict = dict()
 
         for intent_name, intent_file_path in self.get_intent_names():
@@ -117,6 +117,7 @@ class Skill(object):
  
             # load intents again from file
             for intent_type, intent_array in self.intent_training_file_content(intent_file_path, 'intent'):
+                intent_sentences = set()
                 for line in intent_array:
                     line_tokens = self._nlp.tokenization.tokenize(line)
                     expanded = expand_parentheses(line_tokens)
@@ -138,11 +139,13 @@ class Skill(object):
                             permutations = [dict(zip(keys, v)) for v in itertools.product(*values)]
                             for p in permutations:
                                 entities_dict_permutation = EntitiesDict(p)
-                                result.add(sentence.format(**entities_dict_permutation))
+                                intent_sentences.add(sentence.format(**entities_dict_permutation))
                         else:
-                            result.add(sentence)
+                            intent_sentences.add(sentence)
 
-        return list(result) 
+                result[intent_type] = intent_sentences
+
+        return result 
 
 
     def get_additional_entities(self, fieldname):

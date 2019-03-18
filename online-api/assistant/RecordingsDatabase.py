@@ -50,12 +50,13 @@ class RecordingsDatabase(object):
               (
                   guid VARCHAR(100) NOT NULL, 
                   skill_name VARCHAR(50) NOT NULL,
+                  intent_name VARCHAR(50 NOT NULL,
                   sentence VARCHAR(10000), 
                   PRIMARY KEY (guid)
               )""")
 
 
-    def add_skill_sentences(self, skill_name, sentences):
+    def add_skill_sentences(self, skill_name, intent_name, sentences):
         db_data = []
         for s in sentences:
            guid=self.hash(s)
@@ -72,7 +73,7 @@ class RecordingsDatabase(object):
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
         cursor = cnx.cursor()
         cursor.execute("""
-            SELECT sentence FROM Sentences ORDER BY skill_name, sentence
+            SELECT skill_name, sentence FROM Sentences ORDER BY skill_name, sentence
         """)
 
         db_result=cursor.fetchall()
@@ -83,6 +84,9 @@ class RecordingsDatabase(object):
         cnx.close()
         return result
          
+
+    def select_skills_sentences(self):
+        result = []
 
     def select_random_unrecorded_sentence(self, uid):
         unrecorded_sentence = ''
@@ -131,3 +135,6 @@ class RecordingsDatabase(object):
     def hash(self, sentence):
         return hashlib.md5(sentence.encode('utf-8')).hexdigest()
 
+if __name__ == "__main__":
+    db=RecordingsDatabase()
+    print (db.select_sentences())

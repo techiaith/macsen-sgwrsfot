@@ -31,7 +31,7 @@ class Brain(object):
         self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize()
 
-        initialize_recordings_database_task.delay(self.expand_intents(), os.path.join(skills_root_dir, 'ignore.dict'))
+        initialize_recordings_database_task.delay(self.expand_skills())
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -80,20 +80,28 @@ class Brain(object):
         return best_handler, best_intent
 
 
-    def expand_intents(self, include_additional_entities=False):
+    def expand_skills(self, include_additional_entities=False):
         result = {}
         for name in self.skills.keys():
             skill = self.skills.get(name)
             result[name] = skill.expand_intents(include_additional_entities)
-        print (result)
+        #print (result)
         return result
 
 
 if __name__ == "__main__":
 
     brain = Brain()
-    #print('\n'.join(brain.expand_intents()))
 
-    response = brain.handle(sys.argv[1])
-    print (jsonpickle.encode(response))
+    skills = brain.expand_skills()
+    for skill in skills:
+        for intent in skills[skill]:
+            print (skill, intent)
+            for sentence in skills[skill][intent]:
+                print (skill, intent, sentence)
+
+
+    if len(sys.argv) > 1:
+        response = brain.handle(sys.argv[1])
+        print (jsonpickle.encode(response))
 

@@ -5,35 +5,23 @@ from nlp.cy.cysill import CysillArleinAPI
 app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
 
 @app.task
-def initialize_recordings_database_task(all_sentences, ignore_dictionary_file_path):
+def initialize_recordings_database_task(all_skill_sentences):
 
     mysql_db = RecordingsDatabase()
 
-    cysill_api = CysillArleinAPI()
-    cysill_api.open_ignore_words(ignore_dictionary_file_path)
+    for skill in all_skill_sentences:
+        for intent in all_skill_sentences[skill]:
+            sanitized_sentences = [] 
+            for sentence in all_skill_sentences[skill][intent]:
+              
+                if len(s) ==0;
+                    continue
 
-    for skill_name, skill_sentences in all_sentences.items():
-        print (skill_name)
-        print (skill_sentences) 
-        proofed_sentences = []
+                if '{' in sentence and '}' in sentence:
+                    continue
 
-        for s in skill_sentences:
-            if len(s) == 0:
-                continue
+                sanitized_sentences.append(sentence)
 
-            if '{' in s and '}' in s:
-                continue
-
-            try:
-                errors = cysill_api.get_errors(s)
-                if (len(errors)) == 0:
-                    print (s)
-                    proofed_sentences.append(s)
-                else:
-                    print ("Error: %s" % s)
-            except:
-                print ("Exception...")
-
-        mysql_db.add_skill_sentences(skill_name, proofed_sentences)
+            mysql_db.add_sentences(skill, intent, sanitized_sentences) 
 
 
