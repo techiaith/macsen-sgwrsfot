@@ -50,21 +50,21 @@ class RecordingsDatabase(object):
               (
                   guid VARCHAR(100) NOT NULL, 
                   skill_name VARCHAR(50) NOT NULL,
-                  intent_name VARCHAR(50 NOT NULL,
+                  intent_name VARCHAR(50) NOT NULL,
                   sentence VARCHAR(10000), 
                   PRIMARY KEY (guid)
               )""")
 
 
-    def add_skill_sentences(self, skill_name, intent_name, sentences):
+    def add_sentences(self, skill_name, intent_name, sentences):
         db_data = []
         for s in sentences:
            guid=self.hash(s)
            if (guid, s) in db_data:
                continue
-           db_data.append((guid, skill_name, s)) 
+           db_data.append((guid, skill_name, intent_name, s)) 
            
-        sql_insert = "INSERT INTO Sentences (guid, skill_name, sentence) VALUES (%s, %s, %s)"
+        sql_insert = "INSERT INTO Sentences (guid, skill_name, intent_name, sentence) VALUES (%s, %s, %s, %s)"
         self.execute_many_sql(sql_insert, db_data)
 
 
@@ -87,6 +87,7 @@ class RecordingsDatabase(object):
 
     def select_skills_sentences(self):
         result = []
+
 
     def select_random_unrecorded_sentence(self, uid):
         unrecorded_sentence = ''

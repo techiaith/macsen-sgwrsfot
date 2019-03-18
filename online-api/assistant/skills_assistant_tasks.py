@@ -14,7 +14,7 @@ def initialize_recordings_database_task(all_skill_sentences):
             sanitized_sentences = [] 
             for sentence in all_skill_sentences[skill][intent]:
               
-                if len(s) ==0;
+                if len(sentence)==0:
                     continue
 
                 if '{' in sentence and '}' in sentence:
@@ -23,5 +23,4 @@ def initialize_recordings_database_task(all_skill_sentences):
                 sanitized_sentences.append(sentence)
 
             mysql_db.add_sentences(skill, intent, sanitized_sentences) 
-
 

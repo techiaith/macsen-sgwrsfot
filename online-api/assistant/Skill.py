@@ -87,6 +87,7 @@ class Skill(object):
                     content_array.extend(entries[1].split(','))
         return content_array
 
+
     def get_intent_names(self):
         intent_root_file_path=os.path.join(self._root_dir, self._name, 'intents')
         for intent_name in os.listdir(intent_root_file_path):
@@ -143,7 +144,7 @@ class Skill(object):
                         else:
                             intent_sentences.add(sentence)
 
-                result[intent_type] = intent_sentences
+                result[intent_type] = list(intent_sentences)
 
         return result 
 
