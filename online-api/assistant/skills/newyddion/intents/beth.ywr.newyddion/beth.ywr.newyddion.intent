@@ -1,3 +1,3 @@
-(Beth yw'r|Be di'r) {newyddion_keyword}?
-(Beth yw'r|Be di'r) {newyddion_keyword} {subject}?
-(Beth yw|Be di) {newyddion_keyword} {country}?
+(Beth yw'r|Be di'r) newyddion?
+(Beth yw'r|Be di'r) newyddion {subject}?
+(Beth yw|Be di) newyddion {country}?
