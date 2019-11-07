@@ -58,7 +58,7 @@ class Skill(object):
                 # adapt
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        #print ("add keyword %s to %s" % (k, intent_name))
+                        print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, entity_name, domain=self._name)
                     
                     adapt_intent_builder.require(entity_name)

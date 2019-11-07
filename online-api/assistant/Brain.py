@@ -27,6 +27,7 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'amser')
         self.load_skill(skills_root_dir, 'spotify')
         self.load_skill(skills_root_dir, 'larwm')
+        self.load_skill(skills_root_dir, 'wicipedia')
 
         self.mysql_db = RecordingsDatabase()
         self.mysql_db.initialize()
