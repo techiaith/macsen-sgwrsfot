@@ -1,6 +1,5 @@
 from celery import Celery
 from RecordingsDatabase import RecordingsDatabase
-from nlp.cy.cysill import CysillArleinAPI
 
 app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
 

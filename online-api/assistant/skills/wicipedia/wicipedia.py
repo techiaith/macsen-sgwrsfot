@@ -37,14 +37,18 @@ class wicipedia_skill(Skill):
 
         result = 'Does dim byd yn Wicipedia ynghylch %s' % search
         result = 'Does dim byd yn Wicipedia ynghylch %s' % search
+        page_url = 'http://cy.wikipedia.org/wiki/' + search.replace(" ","_")
 
         if len(search) > 0:
             wikipedia.set_lang("cy")
-            result = wikipedia.summary(search,sentences=2)
+            result = wikipedia.summary(search, sentences=2)
+            page = wikipedia.page(search)
+            page_url = page.url
 
         skill_response.append({
             'title':result,
             'description':'',
-            'url':''
+            'url':page_url
         })
+        
         return skill_response

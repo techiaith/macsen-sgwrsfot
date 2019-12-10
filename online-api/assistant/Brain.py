@@ -9,7 +9,6 @@ import importlib
 from RecordingsDatabase import RecordingsDatabase
 
 from nlp.cy.nlp import NaturalLanguageProcessing
-from nlp.cy.cysill import CysillArleinAPI
 
 from skills_assistant_tasks import initialize_recordings_database_task
 
