@@ -58,7 +58,7 @@ class Skill(object):
                 # adapt
                 if entity_name.endswith("_keyword"):
                     for k in entities_array:
-                        print ("add keyword %s to %s" % (k, intent_name))
+                        #print ("add keyword %s to %s" % (k, intent_name))
                         self._adapt_intent_engine.register_entity(k, entity_name, domain=self._name)
                     
                     adapt_intent_builder.require(entity_name)
@@ -66,7 +66,7 @@ class Skill(object):
             adapt_intent=adapt_intent_builder.build()
             self._adapt_intent_engine.register_intent_parser(adapt_intent, domain=self._name) 
 
-        self._intents_container.train()
+        self._intents_container.train(debug=False)
 
 
     def get_intent_file_content(self, skill_file_path):
@@ -108,7 +108,7 @@ class Skill(object):
 
     def expand_intents(self, include_additional_entities=False):
         # load entities first in the file and build a dictionary
-        result = dict()   #set()
+        result = dict()  
         entities_dict = dict()
 
         for intent_name, intent_file_path in self.get_intent_names():

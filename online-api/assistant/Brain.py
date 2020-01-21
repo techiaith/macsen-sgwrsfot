@@ -10,6 +10,7 @@ from nlp.cy.nlp import NaturalLanguageProcessing
 
 class Brain(object):
 
+
     def __init__(self, online=True):
         self.skills = dict()
         self.nlp = NaturalLanguageProcessing()
@@ -30,7 +31,7 @@ class Brain(object):
             self.mysql_db = RecordingsDatabase()
             self.mysql_db.initialize()
             initialize_recordings_database_task.delay(self.expand_skills())
-
+            
 
     def load_skill(self, skills_root_dir, skillname):
         skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
@@ -48,8 +49,6 @@ class Brain(object):
         if latitude==0.0 and longitude==0.0:
             latitude=53.2303869
             longitude=-4.1299242
-
-        print (latitude, longitude)
 
         best_key, best_intent = self.determine_intent(text)
         if best_intent: 
@@ -70,7 +69,6 @@ class Brain(object):
 
         for key in self.skills.keys():
             adapt_confidence, intent = self.skills[key].calculate_intent(text)
-            print ( key, adapt_confidence, str(intent))
             score=adapt_confidence*intent.conf
             if score > best_score:
                 best_intent = intent
@@ -92,14 +90,27 @@ if __name__ == "__main__":
 
     brain = Brain(online=False)
 
-    skills = brain.expand_skills()
-    for skill in skills:
-        for intent in skills[skill]:
-            print (skill, intent)
-            for sentence in skills[skill][intent]:
-                print (skill, intent, sentence)
-
     if len(sys.argv) > 1:
-        response = brain.handle(sys.argv[1])
-        print (jsonpickle.encode(response))
+        import argparse
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-t", "--text")
+        parser.add_argument("-s", "--sentences", action='store_true')
+        args = parser.parse_args()
+
+        if args.text is not None:
+            response = brain.handle(args.text)
+            print (jsonpickle.encode(response))
+        elif args.sentences is not None:
+            response = brain.expand_skills(include_additional_entities=False)
+            for skill in response:
+                for intent in response[skill]:
+                    for sentence in response[skill][intent]: 
+                        if len(sentence)==0:
+                            continue
+                        if '{' in sentence and '}' in sentence:
+                            continue
+                        print (sentence)
+        else:
+            print ("Unknown")
+
 

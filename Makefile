@@ -8,6 +8,9 @@ run:
 	docker run --name techiaith-padatious -it --rm \
 		--link skills-online-mysql:mysql \
 		-v ${PWD}/online-api/assistant/:/opt/padatious/src \
+		-v ${PWD}/recordings/:/recordings \
+		-v ${PWD}/data/:/data \
+		-v ${PWD}/local/:/opt/padatious/local \
 		techiaith/padatious bash
 
 clean:

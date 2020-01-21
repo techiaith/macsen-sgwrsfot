@@ -25,16 +25,15 @@ ENV LANG cy_GB.UTF-8
 ENV LANGUAGE cy_GB:en  
 ENV LC_ALL cy_GB.UTF-8
 
-# padatious
-RUN mkdir -p /opt/FaNN \
+# Gosod padatious / Install Padartious
+RUN cd /opt && git clone https://github.com/libfann/fann.git FaNN \
   && cd /opt/FaNN \
-  && wget http://downloads.sourceforge.net/project/fann/fann/2.2.0/FANN-2.2.0-Source.zip \
-  && unzip FANN-2.2.0-Source.zip \
-  && cd FANN-2.2.0-Source/ \
+  && git checkout tags/2.2.0 \
   && cmake . \
   && make install \
   && apt-get install -q -y libfann-dev swig \
-  && pip3 install padatious
+  && pip3 install padatious \
+  && rm -rf /var/lib/apt/lists/*
 
 # adapt
 RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
