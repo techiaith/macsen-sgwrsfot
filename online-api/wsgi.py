@@ -88,12 +88,13 @@ class SkillsAPI(object):
         except ValueError as e:
             return "ERROR: %s" % str(e)
 
-        cherrypy.log("respond to - %s" % text)
+        cherrypy.log("respond to - %s, latitude: %s, longitude: %s " % (text, latitude, longitude))
+
         result = {
             'version' : 1
         }
 
-        intent_name, output = self.brain.handle(text, longitude, latitude)
+        intent_name, output = self.brain.handle(text, latitude, longitude)
 
         success=True
         if output is None:
@@ -104,6 +105,8 @@ class SkillsAPI(object):
             'result':output,
             'success':success
         })
+
+        cherrypy.log(json.dumps(result,indent=1))
 
         return result
 

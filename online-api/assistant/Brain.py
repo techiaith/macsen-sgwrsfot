@@ -6,16 +6,11 @@ import jsonpickle
 
 import importlib
 
-from RecordingsDatabase import RecordingsDatabase
-
 from nlp.cy.nlp import NaturalLanguageProcessing
-
-from skills_assistant_tasks import initialize_recordings_database_task
 
 class Brain(object):
 
-
-    def __init__(self):
+    def __init__(self, online=True):
         self.skills = dict()
         self.nlp = NaturalLanguageProcessing()
 
@@ -28,10 +23,13 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'larwm')
         self.load_skill(skills_root_dir, 'wicipedia')
 
-        self.mysql_db = RecordingsDatabase()
-        self.mysql_db.initialize()
-
-        initialize_recordings_database_task.delay(self.expand_skills())
+        if online:
+            from RecordingsDatabase import RecordingsDatabase
+            from skills_assistant_tasks import initialize_recordings_database_task
+            
+            self.mysql_db = RecordingsDatabase()
+            self.mysql_db.initialize()
+            initialize_recordings_database_task.delay(self.expand_skills())
 
 
     def load_skill(self, skills_root_dir, skillname):
@@ -48,8 +46,10 @@ class Brain(object):
     def handle(self, text, latitude=0.0, longitude=0.0):
         # Bangor, Gwynedd 
         if latitude==0.0 and longitude==0.0:
-            latitude=53.2167738950777
-            longitude=-4.14310073720948
+            latitude=53.2303869
+            longitude=-4.1299242
+
+        print (latitude, longitude)
 
         best_key, best_intent = self.determine_intent(text)
         if best_intent: 
@@ -85,13 +85,12 @@ class Brain(object):
         for name in self.skills.keys():
             skill = self.skills.get(name)
             result[name] = skill.expand_intents(include_additional_entities)
-        #print (result)
         return result
 
 
 if __name__ == "__main__":
 
-    brain = Brain()
+    brain = Brain(online=False)
 
     skills = brain.expand_skills()
     for skill in skills:
@@ -99,7 +98,6 @@ if __name__ == "__main__":
             print (skill, intent)
             for sentence in skills[skill][intent]:
                 print (skill, intent, sentence)
-
 
     if len(sys.argv) > 1:
         response = brain.handle(sys.argv[1])
