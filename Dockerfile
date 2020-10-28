@@ -1,29 +1,20 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 MAINTAINER Uned Technolegau Iaith, Prifysgol Bangor University
 
-# Setup Linux base environment
-RUN apt-get update \ 
-    && apt-get install -q -y \
-	libtext-ngrams-perl \
-        git \
-	cmake \
-        locales \
-	python3 \ 
-	python3-pip \
-	python3-dev \
-        mysql-client \
-	perl \
-        wget \
-	curl \
-	zlib1g-dev \
-	zip \
-	vim 
+RUN apt-get update \
+ && apt-get install -y \
+	git supervisor python3 python3-pip python3-dev \
+        cmake wget curl locales vim zip zlib1g-dev \
+        rabbitmq-server \
+ && pip3 install --upgrade pip setuptools
+
 
 # Set the locale
 RUN locale-gen cy_GB.UTF-8
 ENV LANG cy_GB.UTF-8  
 ENV LANGUAGE cy_GB:en  
 ENV LC_ALL cy_GB.UTF-8
+
 
 # Gosod padatious / Install Padartious
 RUN cd /opt && git clone https://github.com/libfann/fann.git FaNN \
@@ -35,20 +26,34 @@ RUN cd /opt && git clone https://github.com/libfann/fann.git FaNN \
   && pip3 install padatious \
   && rm -rf /var/lib/apt/lists/*
 
-# adapt
+
+# Gosod Adapt / Install Adapt
 RUN pip3 install -e git+https://github.com/mycroftai/adapt#egg=adapt-parser
 
-RUN rm -rf /var/lib/apt/lists/*
 
+# Skills
+
+RUN mkdir -p /opt/skills-server
+ADD server /opt/skills-server
+WORKDIR /opt/skills-server
+RUN pip3 install -r requirements.txt 
+ENV PYTHONPATH="${PYTHONPATH}:/opt/skills-server/assistant"
+
+
+#RUN mkdir -p /var/log/gunicorn \
+#    && mkdir -p /var/log/celery \
+#    && touch /var/log/gunicorn/skills-online-api.error.log
+
+
+# estyn data defnyddiol ar gyfer rhai sgiliau / 
+# fetch some useful data for some of the skills.
 RUN mkdir -p /data
 WORKDIR /data
 RUN wget http://techiaith.cymru/enwaulleoedd/EnwauCymru/EnwauCymru.txt
 
-RUN mkdir -p /opt/padatious
-WORKDIR /opt/padatious/
+WORKDIR /opt/skills-server
 
-# Skills
-RUN pip3 install pyowm feedparser jsonpickle pytz python-dateutil PyMySQL spotipy wikipedia
+EXPOSE 8008
 
-CMD bash
+CMD ["/bin/bash", "-c", "/opt/skills-server/start.sh"]
 

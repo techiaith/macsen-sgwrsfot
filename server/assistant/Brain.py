@@ -23,21 +23,32 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'spotify')
         self.load_skill(skills_root_dir, 'larwm')
         self.load_skill(skills_root_dir, 'wicipedia')
+        self.load_skill(skills_root_dir, 'clic')
 
         if online:
             from RecordingsDatabase import RecordingsDatabase
-            from skills_assistant_tasks import initialize_recordings_database_task
+            from skills_assistant_tasks import initialize_recordings_database_task, initialize_skills_database_task
             
             self.mysql_db = RecordingsDatabase()
             self.mysql_db.initialize()
-            initialize_recordings_database_task.delay(self.expand_skills())
-            
 
-    def load_skill(self, skills_root_dir, skillname):
+            initialize_recordings_database_task.delay(self.expand_skills())
+            initialize_skills_database_task.delay(self.list_skills())
+           
+ 
+
+    def load_skill(self, skills_root_dir, skillname, active=True):
         skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
         class_ = getattr(skill_python_module, skillname + '_skill')
-        instance = class_(skills_root_dir, skillname, self.nlp)
+        instance = class_(skills_root_dir, skillname, self.nlp, active)
         self.skills[skillname] = instance
+
+
+    def list_skills(self):
+        skills = [] 
+        for key in self.skills.keys():
+            skills.append((key, self.skills[key].is_active()))
+        return skills
 
 
     def get_unrecorded_sentence(self, uid):

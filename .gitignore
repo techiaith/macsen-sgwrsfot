@@ -4,5 +4,8 @@ apikey.py
 cysill_arlein_apikey.py
 mysql
 recordings
-online-api/assistant/*_cache
+*_cache
+server/assistant/*_cache
 data
+log
+log*

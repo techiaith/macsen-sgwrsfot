@@ -22,8 +22,8 @@ weather_requires_hin = ["bwrw glaw", "clir", "cymylog"]
 
 class tywydd_skill(Skill):
 
-    def __init__(self, root_dir, name, nlp):
-        super(tywydd_skill, self).__init__(root_dir, name, nlp)
+    def __init__(self, root_dir, name, nlp, active):
+        super(tywydd_skill, self).__init__(root_dir, name, nlp, active)
 
         self.placenames = {}
         self.initialize_placenames()

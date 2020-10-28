@@ -52,6 +52,9 @@ class SkillsAPI(object):
     @cherrypy.expose
     @cherrypy.tools.json_out(handler=callback_handler)
     def get_all_sentences(self, **kwargs):
+
+        cherrypy.log("get_all_sentences...")
+
         sentences = self.recordings_database.select_sentences() 
         result = {
                 'version': 1
@@ -137,7 +140,7 @@ cherrypy.config.update({
     'environment': 'production',
     'log.screen': False,
     'response.stream': True,
-    'log.error_file': 'skills-api.log',
+    'log.error_file': '/var/log/skills-server/cherrypy.error.log',
 })
 
 cherrypy.tree.mount(SkillsAPI(), '/')

@@ -21,16 +21,21 @@ class EntitiesDict(dict):
 
 class Skill(object):
 
-
-    def __init__(self, root_dir, name, nlp):
+    def __init__(self, root_dir, name, nlp, active):
         self._root_dir = root_dir
         self._name = name
         self._nlp = nlp
+        self._active = active
 
         self._intents_container = None
         self._adapt_intent_engine = None
 
         self.initialize_intent_parser()
+
+
+
+    def is_active(self):
+        return self._active
 
 
     def get_name(self):

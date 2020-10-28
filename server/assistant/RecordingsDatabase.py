@@ -21,6 +21,7 @@ class RecordingsDatabase(object):
         self.create_database_if_not_exists()
         self.create_recorded_sentences_table_if_not_exists()
         self.create_sentences_table()
+        self.create_active_skills_table()
 
 
     def create_database_if_not_exists(self):
@@ -56,6 +57,27 @@ class RecordingsDatabase(object):
               )""")
 
 
+    def create_active_skills_table(self):
+        self.execute_sql("""
+             DROP TABLE IF EXISTS Skills
+             """)
+
+        self.execute_sql("""
+             CREATE TABLE Skills
+             (
+                 skill_name VARCHAR(50) NOT NULL,
+                 active BOOLEAN NOT NULL,
+                 PRIMARY KEY (skill_name)
+             )""")            
+
+
+    def add_skill(self, skill_name, active): 
+        db_data = []
+        db_data.append((skill_name, active))
+        sql_insert = "INSERT INTO Skills (skill_name, active) VALUES (%s, %s)"
+        self.execute_many_sql(sql_insert, db_data)
+
+
     def add_sentences(self, skill_name, intent_name, sentences):
         db_data = []
         for s in sentences:
@@ -83,7 +105,7 @@ class RecordingsDatabase(object):
  
         cnx.close()
         return result
-        
+
 
     def select_skills_intents_sentences(self):
         skills={}
@@ -91,7 +113,10 @@ class RecordingsDatabase(object):
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
         cursor = cnx.cursor()
         cursor.execute("""
-            SELECT skill_name, intent_name, sentence FROM Sentences ORDER BY skill_name, intent_name, sentence
+            SELECT s.skill_name, s.intent_name, s.sentence 
+            FROM Sentences as s, Skills as k 
+            WHERE s.skill_name = k.skill_name AND k.active=1
+            ORDER BY s.skill_name, s.intent_name, s.sentence
         """)
 
         db_result=cursor.fetchall()
@@ -143,7 +168,7 @@ class RecordingsDatabase(object):
         sql_insert = "INSERT INTO RecordedSentences (uid, guid) VALUES (%s, %s)"
         self.execute_many_sql(sql_insert, db_data)
         return sentence_hash
-          
+
 
     def execute_sql(self, sql):
         cnx = pymysql.connect(user=DB_USER, password=DB_PASSWORD, host=DB_HOST, database=DB_NAME)
@@ -162,6 +187,7 @@ class RecordingsDatabase(object):
 
     def hash(self, sentence):
         return hashlib.md5(sentence.encode('utf-8')).hexdigest()
+
 
 if __name__ == "__main__":
     db=RecordingsDatabase()

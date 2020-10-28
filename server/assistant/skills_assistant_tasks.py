@@ -4,6 +4,15 @@ from RecordingsDatabase import RecordingsDatabase
 app = Celery('skills_assistant_tasks', broker='pyamqp://guest@localhost//')
 
 @app.task
+def initialize_skills_database_task(all_skills):
+
+    mysql_db = RecordingsDatabase()
+    
+    for skill_name, active in all_skills:
+        mysql_db.add_skill(skill_name, active)
+
+
+@app.task
 def initialize_recordings_database_task(all_skill_sentences):
 
     mysql_db = RecordingsDatabase()

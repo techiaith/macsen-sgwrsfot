@@ -15,8 +15,8 @@ misoedd = ['Ionawr', 'Chwefror', 'Mawrth', 'Ebrill', 'Mai', 'Mehefin', 'Gorffenn
 
 class amser_skill(Skill):
 
-    def __init__(self, root_dir, name, nlp):
-        super(amser_skill, self).__init__(root_dir, name, nlp)
+    def __init__(self, root_dir, name, nlp, active):
+        super(amser_skill, self).__init__(root_dir, name, nlp, active)
 
 
     def handle(self, intent_parser_result, latitude, longitude):

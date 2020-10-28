@@ -13,8 +13,8 @@ from padatious import IntentContainer
 
 class wicipedia_skill(Skill):
 
-    def __init__(self, root_dir, name, nlp):
-        super(wicipedia_skill, self).__init__(root_dir, name, nlp)
+    def __init__(self, root_dir, name, nlp, active):
+        super(wicipedia_skill, self).__init__(root_dir, name, nlp, active)
 
 
     def handle(self, intent_parser_result, latitude, longitude):

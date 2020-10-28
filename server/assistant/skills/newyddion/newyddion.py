@@ -8,8 +8,8 @@ from padatious import IntentContainer
 
 class newyddion_skill(Skill):
 
-    def __init__(self, root_dir, name, nlp):
-        super(newyddion_skill, self).__init__(root_dir, name, nlp)
+    def __init__(self, root_dir, name, nlp, active):
+        super(newyddion_skill, self).__init__(root_dir, name, nlp, active)
 
 
     def handle(self, intent_parser_result, latitude, longitude):
