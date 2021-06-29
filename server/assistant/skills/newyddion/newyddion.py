@@ -6,11 +6,13 @@ from Skill import Skill
 
 from padatious import IntentContainer
 
+from html.parser import HTMLParser
+
+
 class newyddion_skill(Skill):
 
     def __init__(self, root_dir, name, nlp, active):
         super(newyddion_skill, self).__init__(root_dir, name, nlp, active)
-
 
     def handle(self, intent_parser_result, latitude, longitude):
 
@@ -22,27 +24,28 @@ class newyddion_skill(Skill):
 
         if 'subject' in context.keys():
             subject = context["subject"]
-            subject = subject.replace('?','')
+            subject = subject.replace('?', '')
             rss_url = rss_url % subject
             title = "Dyma benawdau %s gwefan newyddion Golwg 360" % subject
-        else: 
+        else:
             rss_url = rss_url % 'newyddion'
             title = "Dyma benawdau gwefan newyddion Golwg 360"
 
         title = title + "."
 
-        skill_response.append({ 
-            'title' : title,
-            'description' : '',
-            'url' : ''})
+        skill_response.append({
+            'title': title,
+            'description': '',
+            'url': ''})
+
+        html_parser = HTMLParser()
 
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
             skill_response.append({
-                'title' : entry.get("title") + ".", 
-                'description' : entry.get('description') + ".", 
-                'url' : entry.get('link')
-            }) 
+                'title': html_parser.unescape(entry.get("title") + "."),
+                'description': html_parser.unescape(entry.get('description') + "."),
+                'url': entry.get('link')
+            })
 
         return skill_response
-        
