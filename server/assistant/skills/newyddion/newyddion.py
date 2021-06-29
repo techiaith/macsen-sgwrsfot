@@ -11,6 +11,8 @@ from html.parser import HTMLParser
 
 class newyddion_skill(Skill):
 
+    html_parser = HTMLParser()
+
     def __init__(self, root_dir, name, nlp, active):
         super(newyddion_skill, self).__init__(root_dir, name, nlp, active)
 
@@ -37,8 +39,6 @@ class newyddion_skill(Skill):
             'title': title,
             'description': '',
             'url': ''})
-
-        html_parser = HTMLParser()
 
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
