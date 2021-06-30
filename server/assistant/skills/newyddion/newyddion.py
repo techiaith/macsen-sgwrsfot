@@ -11,10 +11,11 @@ from html.parser import HTMLParser
 
 class newyddion_skill(Skill):
 
-    html_parser = HTMLParser()
 
     def __init__(self, root_dir, name, nlp, active):
         super(newyddion_skill, self).__init__(root_dir, name, nlp, active)
+        self.html_parser = HTMLParser()
+
 
     def handle(self, intent_parser_result, latitude, longitude):
 
@@ -43,8 +44,8 @@ class newyddion_skill(Skill):
         rss = feedparser.parse(rss_url)
         for entry in rss.get("entries")[:5]:
             skill_response.append({
-                'title': html_parser.unescape(entry.get("title") + "."),
-                'description': html_parser.unescape(entry.get('description') + "."),
+                'title': self.html_parser.unescape(entry.get("title") + "."),
+                'description': self.html_parser.unescape(entry.get('description') + "."),
                 'url': entry.get('link')
             })
 

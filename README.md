@@ -63,6 +63,7 @@ Diolch i docker, mae'r proses gosod popeth arall yn hawdd iawn. Agorwch ffenestr
 $ git clone https://github.com/techiaith/macsen-sgwrsfot.git
 $ cd macsen-sgwrsfot
 ( ... rhoi ffeiliau apikey.py i fewn ...)
-$ make build-online-api
-$ make run-online-api
+$ make mysql
+$ make build
+$ make run
 ```
