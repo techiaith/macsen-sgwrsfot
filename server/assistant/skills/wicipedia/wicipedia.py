@@ -30,7 +30,7 @@ class wicipedia_skill(Skill):
             search = context["pwnc"]
 
         if "personpresenol" in context:
-            search = context["personpersonol"]
+            search = context["personpresenol"]
 
         if "persongorffenol" in context:
             search = context["persongorffenol"]
