@@ -28,8 +28,13 @@ class newyddion_skill(Skill):
         if 'subject' in context.keys():
             subject = context["subject"]
             subject = subject.replace('?', '')
-            rss_url = rss_url % subject
+            rss_url = rss_url % self.handle_subject_website_mappings(subject)
             title = "Dyma benawdau %s gwefan newyddion Golwg 360" % subject
+        elif 'country' in context.keys():
+            country = context["country"]
+            country = country.replace('?', '')
+            rss_url = rss_url % country
+            title = "Dyma benawdau %s gwefan newyddion Golwg 360" % country.title()
         else:
             rss_url = rss_url % 'newyddion'
             title = "Dyma benawdau gwefan newyddion Golwg 360"
@@ -50,3 +55,15 @@ class newyddion_skill(Skill):
             })
 
         return skill_response
+
+
+    def handle_subject_website_mappings(self, subject):
+        if subject in ['rygbi', 'criced']:
+            return "chwaraeon/%s" % subject
+        if subject in ['pêl droed',"pel droed", "pêl-droed"]:
+            return "chwaraeon/pel-droed"
+        if subject=="busnes":
+            return 'arian-a-busnes'
+        return subject
+
+

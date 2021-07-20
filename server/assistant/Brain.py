@@ -38,10 +38,15 @@ class Brain(object):
  
 
     def load_skill(self, skills_root_dir, skillname, active=True):
-        skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
-        class_ = getattr(skill_python_module, skillname + '_skill')
-        instance = class_(skills_root_dir, skillname, self.nlp, active)
-        self.skills[skillname] = instance
+        try:
+            skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
+            class_ = getattr(skill_python_module, skillname + '_skill')
+            instance = class_(skills_root_dir, skillname, self.nlp, active)
+            self.skills[skillname] = instance
+        except ModuleNotFoundError as err:
+            print ("Skill %s not loaded" % skillname)
+            print (err)
+
 
 
     def list_skills(self):
@@ -123,5 +128,6 @@ if __name__ == "__main__":
                         print (sentence)
         else:
             print ("Unknown")
-
+    else:
+        print ("Expecting -t or -s")
 

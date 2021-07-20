@@ -82,14 +82,15 @@ class Skill(object):
         return content_array
 
 
-    def get_entities_file_content(self, skill_file_path):
+    def get_entities_file_content(self, skill_file_path, allow_variations):
         content_array = []
         with open(skill_file_path, 'r', encoding='utf-8') as skill_file:
             for entry in skill_file:
                 entries, variations=entry.strip().split('|'),[]
                 content_array.append(entries[0])
-                if len(entries) > 1:
-                    content_array.extend(entries[1].split(','))
+                if allow_variations:
+                    if len(entries) > 1:
+                        content_array.extend(entries[1].split(','))
         return content_array
 
 
@@ -100,12 +101,12 @@ class Skill(object):
             yield intent_name, intent_file_path
 
 
-    def intent_training_file_content(self, artefacts_root_dir, artefact_file_extension):
+    def intent_training_file_content(self, artefacts_root_dir, artefact_file_extension, allow_variations=True):
         for artefact_file_path in os.listdir(artefacts_root_dir):
             if artefact_file_path.endswith('.' + artefact_file_extension):
                 artefact_name = artefact_file_path.replace('.' + artefact_file_extension, '')
                 if artefact_file_extension is 'entities':
-                    artefact_file_lines = self.get_entities_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
+                    artefact_file_lines = self.get_entities_file_content(os.path.join(artefacts_root_dir, artefact_file_path), allow_variations)
                 elif artefact_file_extension is 'intent':
                     artefact_file_lines = self.get_intent_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
                 yield artefact_name, artefact_file_lines
@@ -118,7 +119,7 @@ class Skill(object):
 
         for intent_name, intent_file_path in self.get_intent_names():
 
-            for entity_type, entities_array in self.intent_training_file_content(intent_file_path, 'entities'):
+            for entity_type, entities_array in self.intent_training_file_content(intent_file_path, 'entities', False):
                 entities_dict[entity_type]=entities_array
  
             # load intents again from file

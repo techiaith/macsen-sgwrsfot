@@ -5,12 +5,12 @@ build-local:
 
 	
 run-local:
-	docker run --name techiaith-padatious -it --rm \
+	docker run --name techiaith-padatious \
+		-it --rm \
 		--link skills-online-mysql:mysql \
 		-v ${PWD}/server/assistant/:/opt/padatious/src \
 		-v ${PWD}/recordings/:/recordings \
 		-v ${PWD}/data/:/data \
-		-v ${PWD}/local/:/opt/padatious/local \
 		techiaith/padatious bash
 
 clean-local:
