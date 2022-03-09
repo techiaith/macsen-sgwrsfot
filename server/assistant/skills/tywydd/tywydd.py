@@ -51,8 +51,10 @@ class tywydd_skill(Skill):
             print (context["lleoliad"])
             if context["lleoliad"] in self.placenames:
                 placename_en, longitude, latitude = self.placenames[context["lleoliad"]]
+
                 longitude = float(longitude)
                 latitude = float(latitude)
+                
                 observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
                 forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
             else:
@@ -61,30 +63,31 @@ class tywydd_skill(Skill):
         else:
             observation = self.api_get_weather_at_coords(float(latitude), float(longitude))
             forecasts = self.api_get_forecast_at_coords(float(latitude), float(longitude))
+            
         return observation, forecasts
 
 
-    def api_get_weather_at_coords(self, latitude, longitude):
+    def api_get_weather_at_coords(self, latitude, longitude):        
         owm = pyowm.OWM(OWM_API_KEY)
-        observation = owm.weather_at_coords(latitude, longitude)
+        observation = owm.weather_manager().weather_at_coords(latitude, longitude)
         return observation
 
 
     def api_get_weather_for_placename(self, placename):
         owm = pyowm.OWM(OWM_API_KEY)
-        observation = owm.weather_at_place(placename)
+        observation = owm.weather_manager().weather_at_place(placename)
         return observation
 
 
     def api_get_forecast_for_placename(self, placename):
         owm = pyowm.OWM(OWM_API_KEY)
-        forecast = owm.three_hours_forecast(placename).get_forecast()
+        forecast = owm.weather_manager().forecast_at_place(placename, interval='3h').forecast
         return forecast
 
 
     def api_get_forecast_at_coords(self, latitude, longitude):
         owm = pyowm.OWM(OWM_API_KEY)
-        forecast = owm.three_hours_forecast_at_coords(latitude, longitude).get_forecast()
+        forecast = owm.weather_manager().forecast_at_coords(lat=latitude, lon=longitude, interval='3h').forecast
         return forecast
 
 
@@ -93,10 +96,10 @@ class tywydd_skill(Skill):
         skill_response = []
 
         ## current weather...
-        w = observation.get_weather()
-        l = observation.get_location()
-        context["city"] = l.get_name()
-        context["country"] = l.get_country() 
+        w = observation.weather
+        l = observation.location
+        context["city"] = l.name
+        context["country"] = l.country
 
         title_template = ''
         if "lleoliad" in context.keys():
@@ -110,8 +113,8 @@ class tywydd_skill(Skill):
         description_template = "Mae %s ac mae'r tymheredd yn %s gradd Celsius"
         
         status_cy, temperature, time = self.nlg_weather_values(
-            w.get_status(),
-            float(w.get_temperature('celsius').get("temp"))
+            w.status,
+            float(w.temperature('celsius').get("temp"))
         )
         if temperature < 0:
             description_template = description_template + " o dan y rhewbwynt"
@@ -138,9 +141,9 @@ class tywydd_skill(Skill):
                 description_template = "Yna, am {} bydd {} â'r tymheredd yn {} gradd Celsius"
 
             status_cy, temperature, time = self.nlg_weather_values(
-                forecast_weather.get_status(),
-                forecast_weather.get_temperature('celsius').get('temp'),
-                forecast_weather.get_reference_time(timeformat='iso')
+                forecast_weather.status,
+                forecast_weather.temperature('celsius').get('temp'),
+                forecast_weather.reference_time(timeformat='iso')
             )
 
             if temperature < 0:
@@ -163,10 +166,11 @@ class tywydd_skill(Skill):
         placename_en=''
         skill_response = []
 
-        w = observation.get_weather()
-        l = observation.get_location()
-        context["city"] = l.get_name()
-        context["country"] = l.get_country()
+        w = observation.weather
+        l = observation.location
+
+        context["city"] = l.name
+        context["country"] = l.country
 
         title_template = ''
         if "lleoliad" in context.keys():
@@ -189,7 +193,7 @@ class tywydd_skill(Skill):
         time_tomorrow = time_now + timedelta(days=1)
         forecast_weather_count=0
         for forecast_weather in forecasts:
-            time = forecast_weather.get_reference_time(timeformat='iso')
+            time = forecast_weather.reference_time(timeformat='iso')
             dt = self._nlp.tokenization.token_to_datetime(time)
 
             if dt < time_tomorrow:
@@ -204,9 +208,9 @@ class tywydd_skill(Skill):
                 description_template = "Yn hwyrach yfory am {} bydd {} a'r tymheredd yn {} gradd Celsius"
 
             status_cy, temperature, time = self.nlg_weather_values(
-                forecast_weather.get_status(),
-                forecast_weather.get_temperature('celsius').get('temp'),
-                forecast_weather.get_reference_time(timeformat='iso')
+                forecast_weather.status,
+                forecast_weather.temperature('celsius').get('temp'),
+                forecast_weather.reference_time(timeformat='iso')
             )
 
             if temperature < 0:

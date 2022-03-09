@@ -56,7 +56,7 @@ class Lemmatization(object):
                     if word.startswith(mutation[0]):
                         if mutation[0] not in ["g"]:
                             mutated_word = mutation[1] + word[(len(mutation[0])):]
-                        elif mutation[0] is "g":
+                        elif mutation[0] in ["g"]:
                             mutated_word = word[1:]
                         return mutated_word
         return word

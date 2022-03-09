@@ -3,34 +3,36 @@ import os
 import sys
 import json
 import codecs
-
 import cherrypy
 import logging
 
-from handlers import callback_handler
-
 from assistant.Brain import Brain
 from assistant.RecordingsDatabase import RecordingsDatabase
+
 
 class SkillsAPI(object):
 
 
     def __init__(self):
-        self.brain = Brain()
+        self.brain = Brain(online=True)
         self.recordings_database = RecordingsDatabase()
 
 
     @cherrypy.expose
     def index(self):
-        msg = "perform_skill/?text=.....\n"
-        msg = msg + "get_all_sentences/?<additional_entities=True|False>i\n"
-        msg = msg + "get_all_skills_intents_sentences/\n"
-        msg = msg + "get_unrecorded_sentence/?uid=.....\n"
+        msg = "perform_skill/?text=....."
+        msg = msg + "<br/>"
+        msg = msg + "get_all_sentences/?<additional_entities=True|False>"
+        msg = msg + "<br/>"
+        msg = msg + "get_all_skills_intents_sentences/"
+        msg = msg + "<br/>"
+        msg = msg + "get_unrecorded_sentence/?uid=....."
+                
         return msg
 
 
     @cherrypy.expose
-    @cherrypy.tools.json_out(handler=callback_handler)
+    @cherrypy.tools.json_out()
     def get_unrecorded_sentence(self, uid, **kwargs):
         try:
             if not uid:
@@ -50,7 +52,7 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
-    @cherrypy.tools.json_out(handler=callback_handler)
+    @cherrypy.tools.json_out()
     def get_all_sentences(self, **kwargs):
 
         cherrypy.log("get_all_sentences...")
@@ -67,7 +69,7 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
-    @cherrypy.tools.json_out(handler=callback_handler)
+    @cherrypy.tools.json_out()
     def get_all_skills_intents_sentences(self, **kwargs):
         skills_intents_sentences = self.recordings_database.select_skills_intents_sentences()
         result = {
@@ -81,7 +83,7 @@ class SkillsAPI(object):
 
 
     @cherrypy.expose
-    @cherrypy.tools.json_out(handler=callback_handler)
+    @cherrypy.tools.json_out()
     def perform_skill(self, text, **kwargs):
         try:
             if not text:

@@ -10,7 +10,6 @@ from nlp.cy.nlp import NaturalLanguageProcessing
 
 class Brain(object):
 
-
     def __init__(self, online=True):
         self.skills = dict()
         self.nlp = NaturalLanguageProcessing()
@@ -24,6 +23,8 @@ class Brain(object):
         self.load_skill(skills_root_dir, 'larwm')
         self.load_skill(skills_root_dir, 'wicipedia')
         self.load_skill(skills_root_dir, 'clic')
+        self.load_skill(skills_root_dir, 'amserydd')
+        self.load_skill(skills_root_dir, 'golau')
 
         if online:
             from RecordingsDatabase import RecordingsDatabase
@@ -42,6 +43,7 @@ class Brain(object):
             skill_python_module = importlib.import_module('skills.%s.%s' % (skillname, skillname))
             class_ = getattr(skill_python_module, skillname + '_skill')
             instance = class_(skills_root_dir, skillname, self.nlp, active)
+            print (skillname)
             self.skills[skillname] = instance
         except ModuleNotFoundError as err:
             print ("Skill %s not loaded" % skillname)
@@ -85,11 +87,17 @@ class Brain(object):
 
         for key in self.skills.keys():
             adapt_confidence, intent = self.skills[key].calculate_intent(text)
-            score=adapt_confidence*intent.conf
-            if score > best_score:
-                best_intent = intent
+            if int(intent.conf)==1:
+                best_intent=intent
                 best_handler = key
                 best_score=score
+                break
+            else:
+                score=adapt_confidence*intent.conf
+                if score > best_score:
+                    best_intent = intent
+                    best_handler = key
+                    best_score=score
 
         return best_handler, best_intent
 

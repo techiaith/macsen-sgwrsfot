@@ -105,9 +105,9 @@ class Skill(object):
         for artefact_file_path in os.listdir(artefacts_root_dir):
             if artefact_file_path.endswith('.' + artefact_file_extension):
                 artefact_name = artefact_file_path.replace('.' + artefact_file_extension, '')
-                if artefact_file_extension is 'entities':
+                if artefact_file_extension == 'entities':
                     artefact_file_lines = self.get_entities_file_content(os.path.join(artefacts_root_dir, artefact_file_path), allow_variations)
-                elif artefact_file_extension is 'intent':
+                elif artefact_file_extension == 'intent':
                     artefact_file_lines = self.get_intent_file_content(os.path.join(artefacts_root_dir, artefact_file_path))
                 yield artefact_name, artefact_file_lines
         
@@ -169,7 +169,7 @@ class Skill(object):
         adapt_best_confidence=0.0        
         adapt_result = self._adapt_intent_engine.determine_intent(text)
         for a in adapt_result:
-            # print (a)
+            #print (a)
             if a["confidence"] > adapt_best_confidence:
                 adapt_best_confidence=a["confidence"]
 
@@ -178,6 +178,8 @@ class Skill(object):
         # 
         #print ("evaluating: %s with padatious:" % text)
         padatious_result = self._intents_container.calc_intent(text)
+        #print (padatious_result)
+        #print (adapt_best_confidence)
 
         return adapt_best_confidence, padatious_result
 
