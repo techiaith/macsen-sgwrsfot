@@ -38,11 +38,11 @@ Defnyddir hybrid o lyfrgelloedd adnabod bwriad cod agored [Padatious](https://my
 
  Mae'r sgwrsfot yn medru adnabod sawl bwriad (neu dymuniad) o bump sgil (neu parth). Gwelir y sgiliau yn:
  
- https://github.com/techiaith/macsen-sgwrsfot/tree/master/online-api/assistant/skills
+ https://github.com/techiaith/macsen-sgwrsfot/tree/master/server/assistant/skills
  
  Gwelir bwriadau pob sgil o fewn eu is-ffolder `intent`. e.e. 
  
- https://github.com/techiaith/macsen-sgwrsfot/tree/master/online-api/assistant/skills/spotify/intents
+ https://github.com/techiaith/macsen-sgwrsfot/tree/master/server/assistant/skills/spotify/intents
  
  Mae'r ffolderi `intents` yn cynnwys data ar gyfer hyfforddi Padatious ac Adapt. 
  
