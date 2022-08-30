@@ -9,3 +9,4 @@ server/assistant/*_cache
 data
 log
 log*
+gh.sh

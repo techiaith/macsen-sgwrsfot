@@ -73,7 +73,9 @@ class larwm_skill(Skill):
         hours_text=context["awr"]
         hours=convert.HOUR_LOOKUP[hours_text]
         period=context["cyfnod"]
-        if period != 'bore' and hours < 13:
+        if period == 'nos' and hours < 5:
+            cyfnod='bore'
+        elif period != 'bore' and hours < 13:
             hours=hours+12
 
         alarm_time_description="%s yn %s" % (hours_text, period)
