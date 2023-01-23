@@ -9,7 +9,7 @@ feedparser==6.0.8
 jsonpickle==2.1.0
 python-dateutil==2.8.2
 PyMySQL==1.0.2
-spotipy==2.19.0
+spotipy==2.22.1
 wikipedia==1.4.0
 adapt-parser==1.0.0
 cryptography==36.0.1
