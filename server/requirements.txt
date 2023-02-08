@@ -12,4 +12,4 @@ PyMySQL==1.0.2
 spotipy==2.19.0
 wikipedia==1.4.0
 adapt-parser==1.0.0
-cryptography==36.0.1
+cryptography==39.0.1
